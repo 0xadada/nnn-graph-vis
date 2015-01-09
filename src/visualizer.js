@@ -2664,13 +2664,17 @@
         };
 
 
+        /**
+         * __
+         */
         function __activateNodeModel(nodeData)
         {
             var node = nodeData.getVisualNode();
 
             if (!node.glow)
             {
-                var material = new THREE.MeshLambertMaterial( {
+                // ToDo: use MeshLambertMaterial if you want it to reflect light
+                var material = new THREE.MeshBasicMaterial( {
                     color: 0xffffff
                 } );
 
