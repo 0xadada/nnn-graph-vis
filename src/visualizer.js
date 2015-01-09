@@ -204,39 +204,12 @@
         }
 
         function addNodeToStage(nodeData,x,y,z) {
-            var material = new THREE.MeshLambertMaterial({
-                map: THREE.ImageUtils.loadTexture(nodeData.baseTexture),
-                color:nodeData.baseColor, //678967
-                blending:THREE.AdditiveBlending,
-                shading: THREE.FlatShading,
-                //side:THREE.DoubleSide,
-                wireframe:false
-            });
-            console.log(x,y,z);
+            console.log('visualizer.addNodeToStage:', x, y, z);
 
-            //var type = (nodeData.getType() === 'entity') ? 14/*Math.floor(Math.random()*_textureUvs.length) */: 1;
             var range = 2500;
             var node = __generateNode(range,nodeData,x,y,z);
             node.nodeData = nodeData;////new THREE.Object3D();
-            //node.position.set(Math.random()*1000-500,Math.random()*1000-500,Math.random()*1000-500)
-            //_scene.add(node);
             nodeData.setVisualNode(node);
-            //console.log(nodeData);
-
-            //var attributeGymbal = new THREE.Object3D();
-            //attributeGymbal.lookAt(_camera);
-            //node.add(attributeGymbal);
-            //console.log(nodeData.attributes.length);
-            //var rootAttr = nodeData.getFullAttributesList();
-            //var attributes = new THREE.PointCloud(__generateAttributeGeometry(rootAttr.length,node.coreSize*0.5),_attrParticleMat);
-            //attributes.sortParticles = true;
-
-            //attributes.lookAt(_camera);
-            //var particles = new THREE.PointCloud(__generateParticleGeometry(nodeData.totalAttributes,30),_attrParticleMat);
-            //node.attributeGymbal = attributeGymbal;
-            //node.attributesCloud = attributes;
-            //TweenMax.to(attributes.rotation,30,{/*x:360*Math.PI/180,y:360*Math.PI/180,*/z:360*Math.PI/180,repeat:-1, ease:Linear.easeNone})
-            //attributeGymbal.add(attributes);
         }
 
         function removeNodeFromStage(nodeData) {
@@ -300,7 +273,6 @@
             if(construct === true)//nodeData.constructed === undefined)
             {
                 nodeData.constructed = true;
-                __constructAttributeBranches(nodeData);
             }
             __activateNodeModel(nodeData)
         }
@@ -886,14 +858,14 @@
             _attrParticleMat = new THREE.PointCloudMaterial({
                 color: _colorManager.getAttributeColor(),//nodeData.baseColor,
                 size: 10, 
-                map: THREE.ImageUtils.loadTexture("assets/images/AttrSphere.png"),
+                map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/attribute-cloud.png'),
                 depthWrite:false,
                 blending:THREE.AdditiveBlending,
                 transparent:true
             });
 
 
-            _attributeTextureMat = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture('assets/images/GlowDot.png'),
+            _attributeTextureMat = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/attribute-cloud-glow.png'),
                 //opacity:0.7,
                 transparent:true,
                 side:THREE.FrontSide,
@@ -1017,10 +989,10 @@
                 transparent: true
             });
 
-            _nodeGlowMat = new THREE.ShaderMaterial( 
+            _nodeGlowMat = new THREE.ShaderMaterial(
             {
-                uniforms: 
-                { 
+                uniforms:
+                {
                     "c":   { type: "f", value: 0.2 },
                     "p":   { type: "f", value: 6.0 },
                     glowColor: { type: "c", value: new THREE.Color(_colorManager.getEntityNodeGlowColor()) },
@@ -1057,7 +1029,7 @@
                     spriteWidth: { type: "f", value: 90.0},
                     screenWidth: { type: "f", value: 1000.0},
                     texture: { type: "t", value: null },
-                    texture_point: { type: "t", value: THREE.ImageUtils.loadTexture("assets/images/NodeSphere.png") },
+                    texture_point: { type: "t", value: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/node-sphere.png') },
                     fogColor:{ type: "c", value: _scene.fog.color},
                     fogDensity:{ type: "f", value: _scene.fog.density}
                     //texture: {type: "c", value:THREE.ImageUtils.loadTexture("assets/images/NodeSphere.png")}
@@ -1107,28 +1079,6 @@
             _ribbonConnectionMats[1] = _positiveHighConnectionMeshMat = _ribbonMat;
 
         }
-
-
-        function __constructAttributeBranches(nodeData)
-        {
-            var node = nodeData.getVisualNode();
-            var attributes = nodeData.getFullAttributesList();
-
-            var i=0;
-            var limit = attributes.length;
-            for(i=0;i<limit;++i)
-            {
-                //console.log(attributes[i])
-                TweenMax.delayedCall(i/2,__generateAttribute,[attributes[i]]);
-                //__generateAttribute(attributes[i]);
-            }
-        }
-
-        function __killAttributeBranches()
-        {
-
-        }
-
 
         ////////////////////
         //  material generation functions
@@ -1563,21 +1513,13 @@
                 //todo increment by 2 to keep nodes next to each other 
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];//new THREE.Vector3();
-                
 
-                    //todo: Refactor this.
-                //vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-            
-                //vect.x = ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.y = ((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.cos((counter/4)-Math.PI/2);//*(dist/200);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.z = ((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                
                 vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-                
+
                 var tarX = v1.x +/*Math.random() - 0.5 +*/ ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
                 var tarY = v1.y +/*Math.random() - 0.5 +*/ ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
                 var tarZ = v1.z +/*Math.random() - 0.5 +*/ ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                
+
                 vect.x = 0;
                 vect.y = 0;
                 vect.z = 0;
@@ -2500,7 +2442,6 @@
                 }
               }
             }
-          
           return geometry;
         }
 
@@ -2509,57 +2450,11 @@
             geom.verticesNeedUpdate = true;
         }
 
-        function __generateNodeCoreGeometry(radius, complexity,type)
-        {
-            var geometry = new THREE.IcosahedronGeometry(radius,complexity);
-            geometry.faceVertexUvs[0] = [];
-            var rndUV = _textureUvs[Math.floor(Math.random()*_textureUvs.length)];
-            for(var i=0; i < geometry.faces.length; ++i){
-                var val = Math.floor(Math.random()*55)+200;
-                var hex = '0x'+__rgbToHex(val,val,val);
-                //rndUV = _textureUvs[Math.floor(Math.random()*_textureUvs.length)];
-                geometry.faceVertexUvs[0][i] = [ rndUV[0], rndUV[1], rndUV[2] ];
-            }
-
-            /*for (var i=0; i <geometry.vertices.length; ++i)
-              {
-                var vert = geometry.vertices[i];
-                vert.x += Math.sin(i/10)*radius/10 + Math.random()-0.5;//Math.random()*4+5;//-(4>>1);
-                vert.y += Math.cos(i/10)*radius/10 + Math.random()-0.5;//*Math.random()*4+5;//-(4>>1);
-                vert.z += Math.sin(i/10)*radius/10 + Math.random()-0.5;//*Math.random()*4+5;//-(4>>1);
-
-                //var mRange = variation*0.5;
-            }*/
-            return geometry;
-        }
-
-
         function __generateNodeGlowGeometry(radius, complexity,type)
         {
             var geometry = new THREE.IcosahedronGeometry(radius,complexity);
-            geometry.faceVertexUvs[0] = [];
-            var rndUV = _textureUvs[Math.floor(Math.random()*_textureUvs.length)];
-            for(var i=0; i < geometry.faces.length; ++i){
-                var val = Math.floor(Math.random()*55)+200;
-                var hex = '0x'+__rgbToHex(val,val,val);
-                //rndUV = _textureUvs[Math.floor(Math.random()*_textureUvs.length)];
-                geometry.faceVertexUvs[0][i] = [ rndUV[0], rndUV[1], rndUV[2] ];
-            }
-
-            for (var i=0; i <geometry.vertices.length; ++i)
-              {
-                var vert = geometry.vertices[i];
-                vert.x += Math.sin(i/10)*radius/10 + Math.random()-0.5;//Math.random()*4+5;//-(4>>1);
-                vert.y += Math.cos(i/10)*radius/10 + Math.random()-0.5;//*Math.random()*4+5;//-(4>>1);
-                vert.z += Math.sin(i/10)*radius/10 + Math.random()-0.5;//*Math.random()*4+5;//-(4>>1);
-
-                //var mRange = variation*0.5;
-            }
             return geometry;
         }
-        
-
-
 
         function __generateMetaVerse(radius,complexity,wireframe,variation)
         {
@@ -2632,33 +2527,8 @@
                 parts.sortParticles = true;
                 sphere.add(parts);
             }
-            //var attributes = new THREE.PointCloud(__generateAttributeGeometry(2000,5),_nodePartMat);
-            
 
-            
-            /*var square = 200;//parts.geometry.vertices.length;
-            var d = 1 / square;
-            for (var y = d / 2; y < 1; y += d) {
-                for (var x = d / 2; x < 1; x += d) {
-                    particles.push(new THREE.Vector2(x, y));
-                }
-            }*/
-
-            //_particleShaderMaterial.attributes.aPoints.value = particles;
-
-
-
-            //parts.sortParticles = true;
-            //sphere.add(parts);
-
-            //var parts = new THREE.PointCloud( geom, local.generateParticleMaterial(20) ); 
-            //_scene.add(parts); 
-
-            //local.nodesArr.push(sphere);
             return sphere;
-            //var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-            //var mesh = new THREE.Mesh( geometry, material );
-
         }
 
 
@@ -2669,7 +2539,7 @@
 
         /**
          * __generateAttribute takes a NodeAttribute object and constructs
-         * a THREE.Object3D object.
+         * a THREE.Object3D object; then adds it to the THREE.js visual node.
          *
          * @param NodeAttribute A node attribute object e.g. cuisine.
          * @return THREE.Object3D object to be rendered to the display.
@@ -2706,13 +2576,8 @@
             ////////////////
             // BRANCHING
 
-            var geom = __generateNodeCoreGeometry(coreSize,rnd,7);
-            //var geom2 = __generateNodeCoreGeometry(coreSize*0.99,rnd,0);
-            //var core = new THREE.Mesh( geom, material);
             var mat = material;//_attributeTextureMat;//material;//(type==1) ? _wireframeMat : _wireframeMat;
             var innerCore = new THREE.Object3D();//THREE.Mesh( geom, mat);
-            //innerCore.scale.multiplyScalar(0);
-            //node.add(core);
             attribute.add(innerCore);
             attribute.coreRange = coreRange;
             attribute.innerCore = innerCore;
@@ -2755,29 +2620,19 @@
 
         function __generateNode(range,nodeData,x,y,z)
         {
-          
             var node;
             var container = _scene;
-            
+
             node = new THREE.Object3D();//THREE.PointCloud( geom, mat );  
 
             node.coreRange = _metaVerseRange;//range;
-            /*var material = new THREE.MeshLambertMaterial({
-            color:'#'+Math.floor(Math.random()*16777215).toString(16), //678967
-            //blending:THREE.AdditiveBlending,
-            shading: THREE.FlatShading,
-            //side:THREE.FrontSide,
-            wireframe:true});*/
 
             var type = (nodeData.getType() === 'entity') ? 1 : 0;
             var coreSize = Math.random()*10+30;
             var rnd = 0;//Math.floor(Math.random()*2);
-            var geom = __generateNodeCoreGeometry(coreSize,rnd,type);
-            //var geom2 = __generateNodeCoreGeometry(coreSize*0.99,rnd,0);
-            //var core = new THREE.Mesh( geom, material);
+
             var mat = _entityNodeMat;//(type===0) ?_userNodeMat : _entityNodeMat;//_nodeTextureMat;//(type==1) ? _wireframeMat : _wireframeMat;
             var innerCore = new THREE.Object3D();//new THREE.Mesh( geom, mat);
-            //node.add(core);
             node.add(innerCore);
 
             node.innerCore = innerCore;
@@ -2803,16 +2658,6 @@
             node.position.z = initZ;//Math.random()*1000-500;
             node.targetVector = node.position.clone();
 
-            //node.innerCore.scale.multiplyScalar(0.005)
-
-            /*var label = new THREE.Mesh(new THREE.TextGeometry(nodeData.getName(), {size:10, height:1, font: 'helvetiker'}),new THREE.MeshBasicMaterial());
-            //label.position.set()
-            node.add(label);
-            label.geometry.computeBoundingSphere();
-            //console.log(label.geometry.boundingSphere.radius);
-            label.position.set(0,-30,0)
-            _labelsArray.push(label);*/
-
             container.add(node);
 
             return node;
@@ -2825,12 +2670,14 @@
 
             if (!node.glow)
             {
-                //console.log(node);
-                var glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), _nodeGlowMat.clone() );
+                var material = new THREE.MeshLambertMaterial( {
+                    color: 0xffffff
+                } );
+
+                var glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), material );
                 glow.material.side = THREE.FrontSide;
-                //node.innerCore.scale.multiplyScalar(0.2)
                 glow.scale.multiplyScalar(0.85);
-                //TweenMax.from([glow.scale,node.innerCore.scale],2,{delay:1,x:0,y:0,z:0});
+
                 _glows.push(glow);
                 node.add( glow );
                 node.glow = glow;
@@ -2956,7 +2803,8 @@
                 nodeGlow.parent.updateMatrixWorld();
                 var rndVector = new THREE.Vector3(Math.random()*_metaVerseRange*2-_metaVerseRange,Math.random()*_metaVerseRange*2-_metaVerseRange,Math.random()*_metaVerseRange*2-_metaVerseRange);
                 var cameraLocalVect = nodeGlow.parent.worldToLocal(_camera.position.clone())
-                _glows[i].material.uniforms.viewVector.value = new THREE.Vector3().subVectors( cameraLocalVect, _glows[i].position );
+                // ToDo: Remove these because we dont need the cloud material
+                // _glows[i].material.uniforms.viewVector.value = new THREE.Vector3().subVectors( cameraLocalVect, _glows[i].position );
             }
             limit = _electrifiedGlows.length;
             for(i=0;i<limit;++i)
@@ -2964,8 +2812,8 @@
                 // localtoworld coordinate issue.  nested objects are basing their location off of the root.
                 var electricGlow = _electrifiedGlows[i]; 
                 var rndVector = new THREE.Vector3(Math.random()*_metaVerseRange*2-_metaVerseRange,Math.random()*_metaVerseRange*2-_metaVerseRange,Math.random()*_metaVerseRange*2-_metaVerseRange);
-                //var rndLocalVect = nodeGlow.parent.worldToLocal(rndVector.clone());//_camera.position.clone())
-                _electrifiedGlows[i].material.uniforms.viewVector.value = new THREE.Vector3().subVectors( rndVector, _electrifiedGlows[i].position.clone() );
+                // ToDo: Remove these because we dont need the cloud material
+                // _electrifiedGlows[i].material.uniforms.viewVector.value = new THREE.Vector3().subVectors( rndVector, _electrifiedGlows[i].position.clone() );
             }
 
             // Patch to fix issue where connection geometries disappear if the mesh's initial position is behind the camera.
