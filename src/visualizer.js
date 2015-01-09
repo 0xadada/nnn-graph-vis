@@ -263,6 +263,15 @@
         }
 
 
+        /**
+         * targetNode activates the node and uses TweenMax to either jump
+         * directly to the node, or fly to it using a bezier curve it defines.
+         *
+         * @param NodeData nodeData the object representing the node.
+         * @param Number delay time to delay before moving to the node.
+         * @param Boolean fly true to Jump directly, false to tween to the node.
+         * @param Number speed how fast to focus on the node.
+         */
         function targetNode(nodeData,delay,fly, speed)
         {
             //todo: proper error handling up in framework with warning of no data
@@ -926,7 +935,7 @@
                 transparent:true,
                 side:THREE.DoubleSide,
                 depthTest:true,
-                //fog:false,
+                // fog:false,
                 blending:THREE.AdditiveBlending,
                 vertexColors: false
             } );
@@ -939,7 +948,7 @@
                 vertexColors: false
             } );
 
-            _nodeTextureMat = new THREE.MeshPhongMaterial( { 
+            _nodeTextureMat = new THREE.MeshPhongMaterial( {
                 map: THREE.ImageUtils.loadTexture('assets/images/GridGradientPattern.jpg'),
                 transparent:true,
                 color:_colorManager.getEntityNodeBaseColor(),
@@ -2664,6 +2673,13 @@
         ////////////////////////
 
 
+        /**
+         * __generateAttribute takes a NodeAttribute object and constructs
+         * a THREE.Object3D object.
+         *
+         * @param NodeAttribute A node attribute object e.g. cuisine.
+         * @return THREE.Object3D object to be rendered to the display.
+         */
         function __generateAttribute(attrData)
         {
             var mat;
