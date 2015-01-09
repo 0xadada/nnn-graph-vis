@@ -711,9 +711,96 @@
         //   PRIVATE FUNCTIONS
         /////////////////////////////////
 
+        /**
+         * __createTextSprint creates a HTML5 canvas element and draws
+         * a box with text inside.
+         * @param String message the text to display.
+         * @param Object Configuration parameters to style the rectangle.
+         * @return THREE.sprite to be composited to the scene.
+         */
+        function __createTextSprite( message, parameters ) {
+            if ( parameters === undefined ) parameters = {};
+            var fontface = parameters.hasOwnProperty("fontface") ? 
+                parameters["fontface"] : "Helvetica";
+            var fontsize = parameters.hasOwnProperty("fontsize") ? 
+                parameters["fontsize"] : 18;
+            var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+                parameters["borderThickness"] : 1;
+            var borderColor = parameters.hasOwnProperty("borderColor") ?
+                parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+            var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+                parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+            var spriteAlignment = {
+                x: 1,
+                y: -1
+            }
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            context.font = "Bold " + fontsize + "px " + fontface;
+            // get size data (height depends only on font size)
+            var metrics = context.measureText( message );
+            var textWidth = metrics.width;
+            // background color
+            context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+                                          + backgroundColor.b + "," + backgroundColor.a + ")";
+            // border color
+            context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+                                          + borderColor.b + "," + borderColor.a + ")";
 
+            context.lineWidth = borderThickness;
+            __canvasDrawRect(context,
+                borderThickness/2,
+                borderThickness/2,
+                textWidth + borderThickness,
+                fontsize * 1.4 + borderThickness,
+                0
+            );
+            // 1.4 is extra height factor for text below baseline: g,j,p,q.
 
+            // text color
+            context.fillStyle = "rgba(0, 0, 0, 1.0)";
 
+            context.fillText( message, borderThickness, fontsize + borderThickness);
+
+            // canvas contents will be used for a texture
+            var texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+
+            var spriteMaterial = new THREE.SpriteMaterial( {
+                map: texture,
+                useScreenCoordinates: false,
+                alignment: spriteAlignment
+            } );
+            var sprite = new THREE.Sprite( spriteMaterial );
+            sprite.scale.set(100,50,1.0);
+            return sprite;
+        }
+
+        /** __canvasDrawRect draws a rectangle on a canvas element.
+         *
+         * @param ctx HTML5 Canvas context.
+         * @param Number x starting x postion.
+         * @param Number y starting y postion.
+         * @param Number w rectange width.
+         * @param Number h rectangle height.
+         * @param Number r corner radius.
+         * @return Modifies the canvas ctx by reference.
+         */
+        function __canvasDrawRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x+r, y);
+            ctx.lineTo(x+w-r, y);
+            ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+            ctx.lineTo(x+w, y+h-r);
+            ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+            ctx.lineTo(x+r, y+h);
+            ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+            ctx.lineTo(x, y+r);
+            ctx.quadraticCurveTo(x, y, x+r, y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
 
 
 
@@ -2480,8 +2567,7 @@
         {
             var mat = __generateSphereMaterial(wireframe,variation,true);
             var geom = __generateSphereGeometry(radius*4,4,variation*4);//local.generateParticleGeometry(10000,1000);//
-            //var geom = __generateSphereGeometry(0,0,0);
-            
+
             var sphere = new THREE.Mesh(geom, mat);
             _scene.add(sphere);
 
@@ -2518,7 +2604,6 @@
                 var p=0;
                 var pLimit = parts.geometry.vertices.length
                 for(p=0;p<pLimit;++p) {
-                
                     // set alpha randomly
                     _particleShaderMaterial.attributes.alpha.value[ p ] = Math.random();
                     particles = parts.geometry.vertices[p];
@@ -2673,18 +2758,47 @@
 
             if (!node.glow)
             {
+                var material,
+                    glow,
+                    label,
+                    labelPostionX,
+                    labelPostionY,
+                    labelPostionZ,
+                    labelText;
                 // ToDo: use MeshLambertMaterial if you want it to reflect light
-                var material = new THREE.MeshBasicMaterial( {
+                material = new THREE.MeshBasicMaterial( {
                     color: 0xffffff
                 } );
 
-                var glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), material );
+                glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), material );
                 glow.material.side = THREE.FrontSide;
                 glow.scale.multiplyScalar(0.85);
 
+                // ToDo: Create the label
+                // create the label text
+                // create the label postion
+                labelPositionX = node.position.x + 22;
+                labelPositionY = node.position.y - 22;
+                labelPositionZ = node.position.z + 22;
+                labelText = ' ' + nodeData.name + ' ';
+                // draw the label
+                label = __createTextSprite( labelText, {
+                    borderThickness: 1,
+                    fontface: 'Helvetica',
+                    fontsize: 24,
+                    borderColor: {r:255, g:255, b:255, a:0.25},
+                    backgroundColor: {r:255, g:255, b:255, a:0.75}
+                } );
+                label.position.set(labelPositionX, labelPositionY, labelPositionZ);
+                // ToDo: (Maybe) add the label to the scene
+                // scene.add( spritey );
+
+                // Glow only
                 _glows.push(glow);
                 node.add( glow );
                 node.glow = glow;
+                // label too
+                node.add( label );
             }
         }
 
