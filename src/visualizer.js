@@ -89,6 +89,13 @@
         //  PUBLIC FUNCTIONS
         ///////////////////////////////
 
+        /** init sets up the THREE WebGL rendering engine and kicks off
+         * animation.
+         *
+         * @param Object scope The lexical scope.
+         * @param NodeDataManager nodeDataManager a common data provider.
+         * @param ColorManager colorManager a common color utility factory.
+         */
         function init(scope,nodeDataManager,colorManager) {
             _scope = scope;
             //$rootScope.$broadcast(INITIALIZE);
@@ -159,19 +166,6 @@
             _postProcessing.bokeh_uniforms["znear"].value   = _camera.near;
             _postProcessing.bokeh_uniforms["zfar"].value    = _camera.far;
             _camera.setLens( _bokehParams.focalLength );
-
-            /*var i=0;
-            var limit = 6;
-            for (i=0;i<limit;++i)
-            {
-                var neuronLight = new THREE.PointLight(0xffffff,1.32,600);
-                var lightTrack = new THREE.Mesh(new THREE.BoxGeometry(10,10,10),new THREE.MeshBasicMaterial({color:'#ffffff'}))
-                _neuronLights[i] = neuronLight;
-                //neuronLight.position.set(Math.random()*4000-2000,Math.random()*4000-2000,Math.random()*4000-2000)
-                _scene.add(neuronLight);
-                _scene.add(lightTrack);
-                _neuronLightTweens[i] = TweenMax.to([neuronLight.position,lightTrack.position],Math.random()*10+10,{ease:Quad.easeInOut,x:Math.random()*4000-2000,y:Math.random()*4000-2000,z:Math.random()*4000-2000,onUpdate:__onNeuronLightUpdate,onComplete:__onNeuronLightMoved,onCompleteParams:[i]});
-            }*/
 
             _renderer = new THREE.WebGLRenderer( { clearAlpha: 1,antialias:true, alpha: true,autoClear:true} );
             _renderer.setSize( window.innerWidth, window.innerHeight );
@@ -2734,7 +2728,6 @@
             attribute.position.y = initY;//Math.random()*1000-500;
             attribute.position.z = initZ;//Math.random()*1000-500;
 
-
             attribute.theta = theta;
             attribute.phi = phi;
 
@@ -3022,7 +3015,6 @@
 
         function __render()
         {
-
             var time = Date.now() * 0.00005;
 
             _particleShaderMaterial.uniforms.texture.value = _particleShaderMaterial.uniforms.texture_point.value
@@ -3033,17 +3025,6 @@
             _renderer.autoClear = false;
             //_renderer.clear();
             _renderer.render( _scene, _camera );
-
-
-            //_renderer.clear();
-            /*_scene.overrideMaterial = null;
-            _renderer.render( _scene, _camera, _postProcessing.rtTextureColor, true );
-
-            _scene.overrideMaterial = _materialDepth;
-            _renderer.render( _scene, _camera, _postProcessing.rtTextureDepth, true );
-
-            /* Then render them using the depth of field postprocessing scene */
-            //_renderer.render( _postProcessing.scene, _postProcessing.camera );
         };
 
 

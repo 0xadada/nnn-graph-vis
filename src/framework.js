@@ -175,9 +175,11 @@
     /**
      * locateNode creates a node (if not defined), and sets the visualizer
      * to target that node, which results in shifting perspective to it.
+     *
      * @param id String the node id.
      * @param speed Number how fast to move to the node.
-     * param fly Boolean 
+     * @param fly Boolean either fly-to or directly jump to the node.
+     * @return void
      */
     $scope.locateNode = function(id,speed, fly) {
         if(id === undefined) id = $scope.inputNodeID;
