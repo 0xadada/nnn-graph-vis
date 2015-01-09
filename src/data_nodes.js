@@ -4,98 +4,98 @@
 
     app.factory('NodeDataManager', function ($http,$rootScope,NodeData,NodeConnection) {
 
-    	var DATA_PARSED = 'NodeDataManager: DATA_PARSED';
+		var DATA_PARSED = 'NodeDataManager: DATA_PARSED';
 
 
-    	var NodeDataManager = function(scope)
-    	{
+		var NodeDataManager = function(scope)
+		{
 
-    		this.nodesList = [];
-    		this.nodesHash = {};
-    		this.dataObj;
-    		this.scope = scope;
-    	}
+			this.nodesList = [];
+			this.nodesHash = {};
+			this.dataObj;
+			this.scope = scope;
+		}
 
-    	NodeDataManager.prototype.loadData = function(id)
-    	{
-    		//todo: access server call to load necessary JSON data.
-    		var self = this;
-    		$http.get('data/nara_boston.json').
-    		//$http.get('data/boston_2000_nodes.json').
-    		//$http.get('data/data_small.json').
-    		//$http.get('data/data_10levels.json').
-		    success(function(data, status, headers, config) {
-		      self.dataObj = data;
-		      self.parseNodeData();
-		    }).
-		    error(function(data, status, headers, config) {
-		      // log error
-		    });
-    		
-    	}
+		NodeDataManager.prototype.loadData = function(id)
+		{
+			//todo: access server call to load necessary JSON data.
+			var self = this;
+			$http.get('data/nara_boston.json').
+			//$http.get('data/boston_2000_nodes.json').
+			//$http.get('data/data_small.json').
+			//$http.get('data/data_10levels.json').
+			success(function(data, status, headers, config) {
+			  self.dataObj = data;
+			  self.parseNodeData();
+			}).
+			error(function(data, status, headers, config) {
+			  // log error
+			});
+			
+		}
 
-    	NodeDataManager.prototype.parseNodeData = function()
-    	{
-    		var i=0;
-    		var limit = this.dataObj.length;
-    		for (i=0;i<limit;++i)
-    		{
-    			var node = new NodeData(this.dataObj[i]);
-    			this.nodesList.push(node);
-    			this.nodesHash[node.id] = node;
-    		}
-    		/*for (i=0;i<limit;++i)
-    		{
-    			var node = this.nodesList[i];
-    			var nConnections = node.getConnections();
-    			var c=0;
-    			var cLimit = nConnections.length;
-    			for(c=0;c<cLimit;++c)
-    			{
-    				var cData = nConnections[c]
+		NodeDataManager.prototype.parseNodeData = function()
+		{
+			var i=0;
+			var limit = this.dataObj.length;
+			for (i=0;i<limit;++i)
+			{
+				var node = new NodeData(this.dataObj[i]);
+				this.nodesList.push(node);
+				this.nodesHash[node.id] = node;
+			}
+			/*for (i=0;i<limit;++i)
+			{
+				var node = this.nodesList[i];
+				var nConnections = node.getConnections();
+				var c=0;
+				var cLimit = nConnections.length;
+				for(c=0;c<cLimit;++c)
+				{
+					var cData = nConnections[c]
 
-    				if (cData !== undefined)
-    				{
-	    				var cNode = this.nodesHash[cData.getConnectionNode()];
-	    				if (cNode !== undefined)
-	    				{
-	    					cNode.addIncomingConnection(cData.getInitialNode(),cData.getWeight());
-	    				}
-	    			}
-    				
-    			}
-    		}*/
+					if (cData !== undefined)
+					{
+						var cNode = this.nodesHash[cData.getConnectionNode()];
+						if (cNode !== undefined)
+						{
+							cNode.addIncomingConnection(cData.getInitialNode(),cData.getWeight());
+						}
+					}
+					
+				}
+			}*/
 
-    		for (i=0;i<limit;++i)
-    		{
-    			//todo: connect and define connections.
-    			var node = this.nodesList[i];
-    			for (c=0;c<node.totalConnections;++c)
-    			{
-    				var connectData = node.connections[c];
-    				//console.log(connectData);// +'  '+this.nodesHash[connectData.connectionNode].attributes);
-    				var connectNode = this.nodesHash[connectData.connectionNode];
-    				if (connectNode !== undefined) 
-    				{
-    					var aLimit = connectNode.attributes.length;
-    					for (a=0;a<aLimit;++a)
-    					{
-    					//	console.log(connectNode.attributes[a])
-    					}
-    				}
-    				//console.log(node.attributes);
-    				//for (a=0;a<connectNode.attributes.length;++a)
-    				//{
-    					//console.log(node.attributes[a])
-    				//}
-    				//console.log('------------');
-    			}
-    			//console.log()
-    		}
+			for (i=0;i<limit;++i)
+			{
+				//todo: connect and define connections.
+				var node = this.nodesList[i];
+				for (c=0;c<node.totalConnections;++c)
+				{
+					var connectData = node.connections[c];
+					//console.log(connectData);// +'  '+this.nodesHash[connectData.connectionNode].attributes);
+					var connectNode = this.nodesHash[connectData.connectionNode];
+					if (connectNode !== undefined) 
+					{
+						var aLimit = connectNode.attributes.length;
+						for (a=0;a<aLimit;++a)
+						{
+						//	console.log(connectNode.attributes[a])
+						}
+					}
+					//console.log(node.attributes);
+					//for (a=0;a<connectNode.attributes.length;++a)
+					//{
+						//console.log(node.attributes[a])
+					//}
+					//console.log('------------');
+				}
+				//console.log()
+			}
 
-    		/*for (i=0;i<100;++i)
-    		{
-    			var fakeData = {
+			/*for (i=0;i<100;++i)
+			{
+				var fakeData = {
 					id: limit+i, 
 					name: Math.floor(Math.random()*16777215).toString(16),
 					type: "entity", 
@@ -109,60 +109,60 @@
 					}, 
 					connections: []
 				}
-    			var node = new NodeData(fakeData);
-    			node.addFakeConnections(this.nodesList);
-    			this.nodesList.push(node);
-    		}*/
+				var node = new NodeData(fakeData);
+				node.addFakeConnections(this.nodesList);
+				this.nodesList.push(node);
+			}*/
 
-    		console.log('data parsed');
-    		this.scope.$emit(NodeDataManager.DATA_PARSED);
-    	}
+			console.log('data parsed');
+			this.scope.$emit(NodeDataManager.DATA_PARSED);
+		}
 
 
-    	NodeDataManager.prototype.clearnodesList = function()
-    	{
-    		var i=0;
-    		var limit = this.nodesList.length;
-    		
-    		for (i=0;i<limit;++i)
-    		{
-    			this.nodesList[i].destroy();
-    		}
-    		this.nodesList = [];
-    		this.nodesHash = {};
-    	}
+		NodeDataManager.prototype.clearnodesList = function()
+		{
+			var i=0;
+			var limit = this.nodesList.length;
+			
+			for (i=0;i<limit;++i)
+			{
+				this.nodesList[i].destroy();
+			}
+			this.nodesList = [];
+			this.nodesHash = {};
+		}
 
-    	NodeDataManager.prototype.getNodeByID = function(id)
-    	{
-    		return this.nodesHash[id];
-    	}
+		NodeDataManager.prototype.getNodeByID = function(id)
+		{
+			return this.nodesHash[id];
+		}
 
-    	NodeDataManager.prototype.getNodeList = function()
-    	{
-    		return this.nodesList;
-    	}
+		NodeDataManager.prototype.getNodeList = function()
+		{
+			return this.nodesList;
+		}
 
-    	NodeDataManager.prototype.getNodeHash = function()
-    	{
-    		return this.nodesHash;
-    	}
-    	return NodeDataManager;
+		NodeDataManager.prototype.getNodeHash = function()
+		{
+			return this.nodesHash;
+		}
+		return NodeDataManager;
     })
 
 
 
     /*app.factory('jsonData', function ($http) {
-    	var obj;// = $http.get('data/nnn_json_structure.json').success(successCallback)//$http.get('data/nnn_json_structure.json')
-    	//return obj;
+		var obj;// = $http.get('data/nnn_json_structure.json').success(successCallback)//$http.get('data/nnn_json_structure.json')
+		//return obj;
 
-    	$http.get('data/nnn_json_structure.json').
-	    success(function(data, status, headers, config) {
-	      obj = data;
-	    }).
-	    error(function(data, status, headers, config) {
-	      // log error
-	    });
-	    return obj;
+		$http.get('data/nnn_json_structure.json').
+		success(function(data, status, headers, config) {
+		  obj = data;
+		}).
+		error(function(data, status, headers, config) {
+		  // log error
+		});
+		return obj;
     })*/
 
 	app.factory('NodeConnection', function ($http) {
@@ -573,23 +573,23 @@
 
 	app.factory('NodeFactory', function (DataNode,AdvDataNode) {
 
-    	this.createAdvNode = function (userName)
-    	{
-    		return new AdvDataNode(userName);
-    	}
+		this.createAdvNode = function (userName)
+		{
+			return new AdvDataNode(userName);
+		}
 
-    	this.createNode = function (userName)
-    	{
-    		return new DataNode(userName);
-    	}
+		this.createNode = function (userName)
+		{
+			return new DataNode(userName);
+		}
 
 
 
 
 
         return {
-        	createNode : this.createNode,
-        	createAdvNode : this.createAdvNode
+			createNode : this.createNode,
+			createAdvNode : this.createAdvNode
             // create : function (userName) {
             //     return new AdvDataNode(userName);
             // }
@@ -605,25 +605,25 @@
 
 
     app.factory('DataNode', function ($http) {
-	    var apiUrl = 'https://api.github.com/';
+		var apiUrl = 'https://api.github.com/';
 
-	    // instantiate our object
-	    var DataNode = function (username) {
-	        this.username = username;
-	        this.profile = null;
-	    };
-	    // this method will fetch data from GH API and return a promise
-	    DataNode.prototype.getProfile = function () {
-	        // Generally, javascript callbacks, like here the $http.get callback, change the value of the "this" variable inside callbacks so we need to keep a reference to the current instance "this", and we do it with the following :
-	        var self = this;
-	        return $http.get(apiUrl + 'users/' + this.username).then(function (response) {
-	            // we store the API result in user.profile. 
-	            self.profile = response.data
-	            // promises success should always return something in order to allow promise  chaining
-	            return response;
-	        });
-	    };
-	    return DataNode;
+		// instantiate our object
+		var DataNode = function (username) {
+			this.username = username;
+			this.profile = null;
+		};
+		// this method will fetch data from GH API and return a promise
+		DataNode.prototype.getProfile = function () {
+			// Generally, javascript callbacks, like here the $http.get callback, change the value of the "this" variable inside callbacks so we need to keep a reference to the current instance "this", and we do it with the following :
+			var self = this;
+			return $http.get(apiUrl + 'users/' + this.username).then(function (response) {
+				// we store the API result in user.profile. 
+				self.profile = response.data
+				// promises success should always return something in order to allow promise  chaining
+				return response;
+			});
+		};
+		return DataNode;
 	})
 
 
@@ -632,36 +632,36 @@
 
 	// we inject our original service so we can extend it properly
 	app.factory('AdvDataNode', function ($http, DataNode) {
-	    var apiUrl = 'https://api.github.com/';
+		var apiUrl = 'https://api.github.com/';
 
-	    // instantiate our custom object with original object constructor
-	    var AdvDataNode = function (username) {
-	        DataNode.apply(this, arguments);
-	    };
+		// instantiate our custom object with original object constructor
+		var AdvDataNode = function (username) {
+			DataNode.apply(this, arguments);
+		};
 
-	    // duplicate the original object prototype
-	    AdvDataNode.prototype = new DataNode();
+		// duplicate the original object prototype
+		AdvDataNode.prototype = new DataNode();
 
-	    // define a new internal method for this object
-	    function getUserEvents() {
-	        var self = this;
-	        return $http.get(apiUrl + 'users/' + this.username + '/events').then(function (response) {
-	            self.profile.events = response.data;
-	            return response;
-	        });
-	    }
-	    // we'll override our original getProfile
-	    AdvDataNode.prototype.getProfile = function () {
-	        // first call the original getProfile method
-	        var originalGetProfile = DataNode.prototype.getProfile.apply(this, arguments);
-	        // then once profile fetched, add some more user data
-	        var self = this;
-	        return originalGetProfile.then(function () {
-	            // call our private method, binding "this" to "self";
-	            return getUserEvents.call(self);
-	        });
-	    };
-	    return AdvDataNode;
+		// define a new internal method for this object
+		function getUserEvents() {
+			var self = this;
+			return $http.get(apiUrl + 'users/' + this.username + '/events').then(function (response) {
+				self.profile.events = response.data;
+				return response;
+			});
+		}
+		// we'll override our original getProfile
+		AdvDataNode.prototype.getProfile = function () {
+			// first call the original getProfile method
+			var originalGetProfile = DataNode.prototype.getProfile.apply(this, arguments);
+			// then once profile fetched, add some more user data
+			var self = this;
+			return originalGetProfile.then(function () {
+				// call our private method, binding "this" to "self";
+				return getUserEvents.call(self);
+			});
+		};
+		return AdvDataNode;
 	})
 
 })();
