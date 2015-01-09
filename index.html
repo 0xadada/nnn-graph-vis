@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nara Neural Network</title>
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css" />
+</head>
+<body>
+<!-- config options -->
+<script type="text/javascript">
+    window.nara = {
+        'theme' : 'graph' // node image style: graph | nerve
+    };
+</script>
+
+<!-- ---------------- Custom Shader Code ------------------------ -->
+<script type="x-shader/x-vertex" id="vertexShader" >
+    uniform vec3 viewVector;
+    uniform float c;
+    uniform float p;
+    varying float intensity;
+    void main()
+    {
+        vec3 vNormal = normalize( normalMatrix * normal );
+        vec3 vNormel = normalize( normalMatrix * viewVector );
+        intensity = pow( abs(c - dot(vNormal, vNormel) ), p );
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    }
+</script>
+
+<!-- fragment shader a.k.a. pixel shader -->
+<script type="x-shader/x-vertex" id="fragmentShader">
+    uniform vec3 glowColor;
+    varying float intensity;
+    void main()
+    {
+        vec3 glow = glowColor * intensity;
+        gl_FragColor = vec4( glow, 0.7 );
+    }
+</script>
+
+<script type="x-shader/x-vertex" id="particleVertexShader">
+    attribute float alpha;
+    varying float partVAlpha;
+    attribute float size;
+    attribute vec3 pcolor;
+    attribute vec2 aPoints;
+    varying vec3 vColor;
+    varying float camDist;
+    uniform float spriteWidth;      //object space width of sprite (maybe an per-vertex in)
+    uniform float screenWidth;      //screen width in pixels
+    uniform sampler2D texture;
+    void main() {
+        partVAlpha = alpha;
+        vColor = pcolor;
+        //vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+        vec4 pos=vec4(texture2D(texture,aPoints).xyz,1.0)+vec4(position,1.0);
+        //vec4 pos=vec4(position,1.0);
+        vec4 mvPosition = modelViewMatrix * pos;
+
+        camDist = length( distance(mvPosition.xyz,vec3(0.0,0.0,0.0)) );
+        gl_PointSize = spriteWidth * (1000.0 / camDist);
+        gl_Position = projectionMatrix * mvPosition;
+    }
+</script>
+
+<script type="x-shader/x-fragment" id="particleFragmentShader">
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    uniform vec3 color;
+    varying float partVAlpha;
+    varying float camDist;
+    uniform sampler2D texture_point;
+
+    varying vec3 vColor;
+
+    float rand(vec2 co){
+          return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+    }
+
+    void main() {
+        vec4 outColor = texture2D( texture_point, gl_PointCoord );
+
+        gl_FragColor = vec4( color, 1.0/*-camDist/10000.0*/);
+        gl_FragColor = gl_FragColor * texture2D( texture_point, gl_PointCoord );
+    }
+</script>
+
+<script src='vendor/jquery-1.9.1.min.js'></script>
+<script src='vendor/angular.min.js'></script>
+<script src='vendor/three.min.js'></script>
+<script src="vendor/shaders/BokehShader2.js"></script>
+<script src='vendor/greensock-v13/TweenMax.min.js'></script>
+<script src='vendor/greensock-v13/TimelineMax.min.js'></script>
+<script src='src/app_construct.js'></script>
+<script src='src/data_nodes.js'></script>
+<script src='src/color_manager.js'></script>
+<script src="src/visualizer.js"></script>
+<script src="src/framework.js"></script>
+<script src="vendor/helvetiker_regular.typeface.js"></script>
+
+<div class="core" ng-app="Core" ng-controller="CoreCtrl">
+    <div class='scene' id='visualizer'></div>
+
+    <div class='hud'>
+        <div class="start_button" ng-click="demoMode()"><img class="start_button" src="assets/images/connect.jpg" /></div>
+        <div style="display: none;">
+            <button ng-click="getGraphData()">load data</button>
+            <button ng-click="connectAllNodes()">connect</button> 
+            <button ng-click="clusterNodes()">cluster</button> 
+            <button ng-click="clearData()">clear data</button>
+            <button ng-click="locateNode()">locate node</button>
+            <button ng-click="setActiveNode()">activate node</button>
+            <input id="nodeIDField" type="number" min="1" max="10000" ng-model="inputNodeID">NodeID</input>
+            <button ng-click="simulateNodeConstruction()">construct node</button>
+            <button ng-click="revealNetwork()">revealNetwork</button>
+            <input id="zoomValueField" type="number" min="1" step="200" max="30000" ng-model="zoomLevel">ZoomValue</input>
+            <button ng-click="setFogLevel(fogDepthValue)">setFogLevel</button>
+            <input id="fogDepth" type="number" min="0" max="1" step="0.000001" ng-model="fogDepthValue">FogDepth</input>
+        </div>
+
+        <!--
+        <div class='nodes' ng-class="{odd: $odd}" ng-repeat="node in nodes">
+            <img class="node" ng-src="{{ node.baseTexture }}">
+            <b>{{ node.id }}</b> ({{ node.totalAttributes }})
+            <div class="label">
+                <span>{{node.name }}</span>
+                <span>
+                    <button class='locate_button' ng-click="locateNode(node.id)">L</button>
+                    <button class='locate_button' ng-click="displayNodeConnections(node.id)">C</button>
+                    <button class='locate_button' ng-click="isolateNode(node.id)">I</button>
+                </span>
+            </div>
+        </div>
+        -->
+
+        <div class='activeNode'>
+            {{getNodeDataByID(activeNode.id).getName()+':'+getNodeDataByID(activeNode.id).getID()}}
+            <span>
+                <button class='locate_button' ng-click="locateNode(activeNode.id, 3)" title="locate">L</button>
+                <button class='locate_button' ng-click="displayNodeConnections(activeNode.id)" title="display node connections">C</button>
+                <button class='locate_button' ng-click="isolateNode(activeNode.id)" title="isolate node">I</button>
+                <!--
+                <button class='locate_button' ng-click="setActivateNode(activeNode.id)" title="set active node">A</button>
+                -->
+                <button class='locate_button' ng-click="branchNode(activeNode.id,6)" title="branch node">B</button>
+            </span>
+        </div>
+
+        <div class='nodes' ng-class="{odd: $odd}" ng-repeat="connection in activeNodeConnections">
+            <div class="label">
+                <span>
+                    {{getNodeDataByID(connection.connectionNode).getName()+':'+getNodeDataByID(connection.connectionNode).getID()}}
+                </span>
+                <span>
+                    <button class='locate_button' ng-click="locateNode(connection.getConnectionNode(), 3)" title="locate node">L</button>
+                    <button class='locate_button' ng-click="locateNode(connection.getConnectionNode(), 15, true)" title="locate node">F</button>
+                    <button class='locate_button' ng-click="displayNodeConnections(connection.getConnectionNode())" title="display node connections">C_all</button>
+                    <button class='locate_button' ng-click="displayConnection(connection)" title="display connectiosn">C_to</button>
+                    <button class='locate_button' ng-click="isolateNode(connection.getConnectionNode())" title="isolate node">I</button>
+                    <button class='locate_button' ng-click="setActiveNode(connection.getConnectionNode())" title="set active node">A</button>
+                    <button class='locate_button' ng-click="highlightConnection(connection)" title="highlight connection">H</button>
+                </span>
+            </div>
+
+            <!-- connection weights
+            <div class="label">
+                <span>{{connection.weight}}</span>
+                <span>
+                    <button class='locate_button' ng-click="locateNode(connection.getConnectionNode())">L</button>
+                    <button class='locate_button' ng-click="displayNodeConnections(connection.getConnectionNode())">C</button>
+                    <button class='locate_button' ng-click="isolateNode(connection.getConnectionNode())">I</button>
+                </span>
+            </div>
+            -->
+
+        </div>
+
+        <!--
+        <div class='attributes_list'>{{getNodeDataByID(activeNode.id).getFullAttributesList()}} </div>
+        -->
+
+        <!--
+        <div ng-repeat="attribute in getNodeDataByID(activeNode.id).getFullAttributesList()">
+            <div class="label">{{attribute.getName() + ' '+ (attribute.getName() == activeAttribute.getName())}}</div>
+        </div>
+        -->
+
+    </div>
+</div>
+
+</body>
+</html>
