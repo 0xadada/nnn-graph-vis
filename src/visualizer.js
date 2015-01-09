@@ -2774,12 +2774,12 @@
                 glow.material.side = THREE.FrontSide;
                 glow.scale.multiplyScalar(0.85);
 
-                // ToDo: Create the label
+                // ToDo: Position the x, y z of the label
                 // create the label text
                 // create the label postion
-                labelPositionX = node.position.x + 22;
-                labelPositionY = node.position.y - 22;
-                labelPositionZ = node.position.z + 22;
+                labelPositionX = node.position.x + 2;
+                labelPositionY = node.position.y + 1;
+                labelPositionZ = node.position.z;
                 labelText = ' ' + nodeData.name + ' ';
                 // draw the label
                 label = __createTextSprite( labelText, {
