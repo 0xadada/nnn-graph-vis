@@ -139,11 +139,15 @@
 
             _centralLight = new THREE.PointLight(_colorManager.getCentralLightColor(),1.4,1500);
             _scene.add(_centralLight);
-            _centralLightTween = TweenMax.to(_centralLight.position,5,{x:_camera.position.x,y:_camera.position.y,z:_camera.position.z,repeat:-1})
+            _centralLightTween = TweenMax.to(_centralLight.position,5,{
+                x : _camera.position.x,
+                y : _camera.position.y,
+                z : _camera.position.z,
+                repeat : -1
+            })
 
             _scene.add(_ambLight);
             _metaVerseRange = 1000;
-
 
             _metaVerse = __generateMetaVerse(_metaVerseRange,4,true,_metaVerseRange);
             _scene.add(_metaVerse);
@@ -152,7 +156,6 @@
             _scene.add(_metaVerseBoundary)
 
             __initPostProcessing();
-
 
             /* Setting up the DoF parameters to bokeh shader */
             for( var e in _bokehParams ) {
@@ -164,11 +167,17 @@
             _postProcessing.bokeh_uniforms["zfar"].value    = _camera.far;
             _camera.setLens( _bokehParams.focalLength );
 
-            _renderer = new THREE.WebGLRenderer( { clearAlpha: 1,antialias:true, alpha: true,autoClear:true} );
+            _renderer = new THREE.WebGLRenderer({
+                clearAlpha : 1,
+                antialias : true,
+                alpha : true,
+                autoClear : true
+            });
             _renderer.setSize( window.innerWidth, window.innerHeight );
             _renderer.autoClear = false;
             _container.appendChild( _renderer.domElement );
 
+            // setup interaction listeners
             $(document).on('mousemove', __onDocumentMouseMove);
             $(document).on('click',__onDocumentClick);
             $(document).on('mousedown',__onMouseDown);
@@ -182,22 +191,8 @@
         ////////////////////////////////////////////
         /// Node Specific public facing functions
 
-        function createNode(nodeData,x,y,z)
-        {
+        function createNode(nodeData,x,y,z) {
             addNodeToStage(nodeData,x,y,z);
-        }
-
-
-        function createNodes(nodes)
-        {
-            var i=0;
-            var limit = nodes.length;
-            for(i=0;i<limit;++i)
-            {
-                //console.log(nodes[i])
-                //TweenMax.delayedCall(i/1000,addNodeToStage,[nodes[1]])
-                addNodeToStage(nodes[i]);
-            }
         }
 
         function addNodeToStage(nodeData,x,y,z) {
@@ -213,15 +208,7 @@
             _scene.remove(nodeData.getVisualNode());
         }
 
-
         function simulateNodeConstruction(nodeData) {
-            //__alignNodeAttributes(nodeData.getVisualNode(),10,0,0);
-            /*var i=0;
-            var limit=attributes.limit;
-            /*for (i=0;i<limit;++i)
-            {
-                TweenMax.
-            }*/
             isolateNode(nodeData,0);
             targetNode(nodeData,1,false,2);
         }
@@ -936,8 +923,7 @@
 
 
 
-        function __initializeNodeTextures()
-        {
+        function __initializeNodeTextures() {
 
             _attrParticleMat = new THREE.PointCloudMaterial({
                 color: _colorManager.getAttributeColor(),//nodeData.baseColor,
@@ -948,8 +934,8 @@
                 transparent:true
             });
 
-
-            _attributeTextureMat = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/attribute-cloud-glow.png'),
+            _attributeTextureMat = new THREE.MeshBasicMaterial({
+                map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/attribute-cloud-glow.png'),
                 //opacity:0.7,
                 transparent:true,
                 side:THREE.FrontSide,
@@ -990,7 +976,8 @@
                 vertexColors: false
             } );
 
-            _attributeRibbonMat = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/attribute-connection-pattern.png') ,
+            _attributeRibbonMat = new THREE.MeshBasicMaterial({
+                map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/attribute-connection-pattern.png'),
                 transparent:true,
                 side:THREE.DoubleSide,
                 //fog:false,
@@ -1042,14 +1029,12 @@
             _textureUvs = [];
             var i=0;
             var limit = 3;//Math.random()*21+1;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 var ySpacing = 1/limit;
                 var yOffset = ySpacing * i;
                 var n=0;
                 var nLimit=2;//Math.random()*34+1;
-                for (n=0;n<nLimit;++n)
-                {
+                for (n=0;n<nLimit;++n) {
                     var xSpacing = 1/nLimit;
                     var xOffset = xSpacing * n;
                     var textureUV = [
@@ -1062,14 +1047,18 @@
                 }
             }
 
-            _attrGlowMat = new THREE.ShaderMaterial(
-            {
-                uniforms:
-                {
+            _attrGlowMat = new THREE.ShaderMaterial( {
+                uniforms: {
                     "c":   { type: "f", value: 0.0 },
                     "p":   { type: "f", value: 5.5 },
-                    glowColor: { type: "c", value: new THREE.Color(_colorManager.getAttributeGlowColor()) },
-                    viewVector: { type: "v3", value: _camera.position }
+                    glowColor: {
+                        type: "c",
+                        value: new THREE.Color(_colorManager.getAttributeGlowColor())
+                    },
+                    viewVector: {
+                        type: "v3",
+                        value: _camera.position
+                    }
                 },
                 vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
                 fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
@@ -1078,8 +1067,7 @@
                 transparent: true
             });
 
-            _nodeGlowMat = new THREE.ShaderMaterial(
-            {
+            _nodeGlowMat = new THREE.ShaderMaterial( {
                 uniforms:
                 {
                     "c":   { type: "f", value: 0.2 },
@@ -1095,10 +1083,8 @@
                 transparent: true
             });
 
-            _ribbonGlowMat = new THREE.ShaderMaterial( 
-            {
-                uniforms: 
-                { 
+            _ribbonGlowMat = new THREE.ShaderMaterial({
+                uniforms: { 
                     "c":   { type: "f", value: 0 },
                     "p":   { type: "f", value: 5 },
                     glowColor: { type: "c", value: new THREE.Color(_colorManager.getConnectionSparkGlowColor()) },
@@ -1117,10 +1103,12 @@
                     spriteWidth: { type: "f", value: 90.0},
                     screenWidth: { type: "f", value: 1000.0},
                     texture: { type: "t", value: null },
-                    texture_point: { type: "t", value: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/node-sphere.png') },
+                    texture_point: {
+                        type: "t",
+                        value: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/node-sphere.png')
+                    },
                     fogColor:{ type: "c", value: _scene.fog.color},
                     fogDensity:{ type: "f", value: _scene.fog.density}
-                    //texture: {type: "c", value:THREE.ImageUtils.loadTexture("assets/images/NodeSphere.png")}
                 },
                 attributes:     {
                     alpha: { type: 'f', value: [] },
@@ -1139,17 +1127,20 @@
             _ribbonUvs = [];
             var i=0;
             var limit = 2;//Math.random()*21+1;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 var ySpacing = 1/limit;
                 var yOffset = ySpacing * i;
                 var n=0;
                 var nLimit=10;//Math.random()*34+1;
-                for (n=0;n<nLimit;++n)
-                {
+                for (n=0;n<nLimit;++n) {
                     var xSpacing = 1/nLimit;
                     var xOffset = xSpacing * n;
-                    var ribbonUV = [new THREE.Vector2(xOffset, yOffset), new THREE.Vector2(xSpacing+xOffset, yOffset), new THREE.Vector2(xSpacing+xOffset, ySpacing+yOffset), new THREE.Vector2(xOffset, ySpacing+yOffset)];
+                    var ribbonUV = [
+                        new THREE.Vector2(xOffset, yOffset),
+                        new THREE.Vector2(xSpacing+xOffset, yOffset),
+                        new THREE.Vector2(xSpacing+xOffset, ySpacing+yOffset),
+                        new THREE.Vector2(xOffset, ySpacing+yOffset)
+                    ];
                     _ribbonUvs.push(ribbonUV);
                 }
             }
@@ -1165,7 +1156,6 @@
 
             _ribbonConnectionMats = {};
             _ribbonConnectionMats[1] = _positiveHighConnectionMeshMat = _ribbonMat;
-
         }
 
         ////////////////////
@@ -2507,7 +2497,6 @@
             revealNetwork : revealNetwork,
             setFogLevel : setFogLevel,
             createNode : createNode,
-            createNodes : createNodes,
             targetNode : targetNode,
             activateNode : activateNode,
             simulateNodeConstruction : simulateNodeConstruction,

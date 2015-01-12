@@ -31,11 +31,9 @@
             error(function(data, status, headers, config) {
               // log error
             });
-            
         }
 
-        NodeDataManager.prototype.parseNodeData = function()
-        {
+        NodeDataManager.prototype.parseNodeData = function() {
             var i=0;
             var limit = this.dataObj.length;
             for (i=0;i<limit;++i)
