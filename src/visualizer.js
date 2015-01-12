@@ -179,7 +179,6 @@
 
             // setup interaction listeners
             $(document).on('mousemove', __onDocumentMouseMove);
-            $(document).on('click',__onDocumentClick);
             $(document).on('mousedown',__onMouseDown);
             $(document).on('mouseup',__onMouseUp);
             $(document).on('mousewheel', __onDocumentMouseWheel);
@@ -282,8 +281,7 @@
             var i=0;
             var limit = nodeData.connections.length;
             //if (limit > 10) limit = 10;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 //console.log(nodeData.connections[i].getConnectionNode())
                 var connection = nodeData.connections[i];
                 var targetID = connection.getConnectionNode();
@@ -302,12 +300,7 @@
                 {
                     connection.isConnected(true);
                     TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,linkedNode,12]);
-                    //TweenMax.to(linkedNode.position,1,{ease:Quad.easeInOut,x:node.position.x+associationVector.x,y:node.position.y+associationVector.y,z:node.position.z+associationVector.z,onUpdate:__onNodeMove,onUpdateParams:[linkNodeData]});
                 }
-                //__linkNodes(connection,ribbons,node,linkedNode,12);
-
-                //__linkNodes(nodeData.connections[i].getWeight(),ribbons,node,linkedNode,12)
-                //console.log(targetNode);
             }
         }
 
@@ -319,8 +312,7 @@
             var i=0;
             var limit = nodeData.connections.length;
             //if (limit > 10) limit = 10;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 node.isClustered = true;
                 var connection = nodeData.connections[i];
 
@@ -339,26 +331,25 @@
                 //var associationVector = __sphericalPosition(associationRange,theta,phi);;
                 var associationVector = __randomSphereVector(associationRange);
                 //todo: check current connections and calculate relative position between all associated nodes.
-                if (!linkedNode.isClustered && !connection.isConnected())
-                {
+                if (!linkedNode.isClustered && !connection.isConnected()) {
                     linkedNode.isClustered = true;
 
                     var startVector = node.targetVector.clone();//node.position.clone();
                     linkedNode.targetVector.addVectors(node.targetVector.clone(),associationVector);
-                    //node.targetVector.add(associationVector);
 
-                    //TweenMax.set(linkedNode.position,{x:node.position.x+associationVector.x,y:node.position.y+associationVector.y,z:node.position.z+associationVector.z})
-                    //TweenMax.from(linkedNode.position,1.0,{delay:0.4,ease:Quad.easeInOut,x:0,y:0,z:0,onUpdate:__onNodeMove,onUpdateParams:[linkNodeData]});
-                    node.motionTween = TweenMax.to(linkedNode.position,1.0,{delay:0.4,ease:Quad.easeInOut,x:linkedNode.targetVector.x,y:linkedNode.targetVector.y,z:linkedNode.targetVector.z,onUpdate:__onNodeMove,onUpdateParams:[linkNodeData]});
-                    
-                    //node.motionTween = TweenMax.from(linkedNode.position,4.0,{delay:0.4,ease:Quad.easeOut,x:startVector.x,y:startVector.y,z:startVector.z,onUpdate:__onNodeMove,onUpdateParams:[linkNodeData]});
-                    
+                    node.motionTween = TweenMax.to(linkedNode.position,1.0,{
+                        delay : 0.4,
+                        ease : Quad.easeInOut,
+                        x : linkedNode.targetVector.x,
+                        y : linkedNode.targetVector.y,
+                        z : linkedNode.targetVector.z,
+                        onUpdate : __onNodeMove,onUpdateParams:[linkNodeData]
+                    });
                 }
             }
         }
 
-        function displayConnection(connection,ribbons)
-        {
+        function displayConnection(connection,ribbons) {
             var nodeData = _nodeDataManager.getNodeByID(connection.getInitialNode())
             var node = nodeData.getVisualNode();
             var connectNodeData = _nodeDataManager.getNodeByID(connection.getConnectionNode())
@@ -366,57 +357,48 @@
 
             var associationRange = (1-connection.getWeight()+1)*800 + 20;
             var associationVector = __randomSphereVector(associationRange);
-            if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID()))
-            {
+            if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID())) {
                 connection.isConnected(true);
-                TweenMax.to(connectNode.position,1,{ease:Quad.easeInOut,x:node.position.x+associationVector.x,y:node.position.y+associationVector.y,z:node.position.z+associationVector.z,onUpdate:__onNodeMove,onUpdateParams:[connectNodeData]});
+                TweenMax.to(connectNode.position, 1, {
+                    ease : Quad.easeInOut,
+                    x : node.position.x+associationVector.x,
+                    y : node.position.y+associationVector.y,
+                    z : node.position.z+associationVector.z,
+                    onUpdate : __onNodeMove,
+                    onUpdateParams : [connectNodeData]
+                });
             }
             TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
-                
         }
 
-        function highlightConnection(connection)
-        {
+        function highlightConnection(connection) {
             __vibrateConnectionNerve(connection);
         }
 
-        function clusterNodes(nodes)
-        {
+        function clusterNodes(nodes) {
             var i=0;
             var limit = nodes.length;
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 TweenMax.delayedCall(i/(limit/10),clusterNode,[nodes[i]]);
             }
         }
 
-        function connectAllNodes(nodes)
-        {
+        function connectAllNodes(nodes) {
             var i=0;
             var limit = nodes.length;
-            for(i=0;i<limit;++i)
-            {
-                if (nodes[i].getVisualNode() !== undefined)
-                {
+            for(i=0;i<limit;++i) {
+                if (nodes[i].getVisualNode() !== undefined) {
                     TweenMax.delayedCall(i/(limit/100),connectNode,[nodes[i],false]);
                 }
-                //var color = nodes[i].connections
-                //connectNode(nodes[i],'#343434')
-                //console.log(nodes[i])
-                //addNodeToStage(nodes[i]);
             }
         }
 
-
-
-        function moveCameraTargetToNode(id)
-        {
+        function moveCameraTargetToNode(id) {
             var node = _nodeDataManager.getNodeByID(id).getVisualNode();
             TweenMax.to([_cameraTarget.position,_light.position],2,{x:node.position.x,y:node.position.y,z:node.position.z,ease:Quad.easeInOut})
         }
 
-        function spinCamera(speed)
-        {
+        function spinCamera(speed) {
             var origin = _activeNode.position.clone();
             console.log(origin);
             var vect = origin.add(__randomSphereVector(_cameraZoom));
@@ -424,9 +406,7 @@
             TweenMax.to([_camera.position,_cameraLight.position],speed,{delay:1,z:vect.z,y:vect.y,x:vect.x, ease:Quad.easeOut})
         }
 
-
-        function zoomCamera(zoomAmount, speed)
-        {
+        function zoomCamera(zoomAmount, speed) {
             _cameraZoom += zoomAmount;
             console.log('++++++++++++++++++++++++');
             console.log(app);
@@ -437,18 +417,13 @@
         //////////////
         ///////  Full Network public facing functions
 
-        function revealNetwork(zoom,speed)
-        {
+        function revealNetwork(zoom, speed) {
             setFogLevel(0.00006,speed*0.75);//TweenMax.to(_scene.fog,10,{density:0.00016})
             _cameraZoom = zoom;
-            //TweenMax.to(this,speed,{_cameraZoom:zoom})
             TweenMax.to([_camera.position,_cameraLight.position],speed,{delay:0, z:zoom, ease:Quad.easeIn})
-
-            //TweenMax.to(_scene.fog,10,{density:0,repeat:-1,yoyo:true});
         }
 
-        function setFogLevel(value,speed)
-        {
+        function setFogLevel(value, speed) {
             if (speed === undefined) speed = 4
             TweenMax.to(_scene.fog,speed,{density:value});
         }
@@ -458,13 +433,7 @@
         // EVENT HANDLERS
         /////////////////////////
 
-        function __onCameraTargetMove()
-        {
-            //console.log(_cameraTarget.position);
-        }
-
-        function __onCameraMoveComplete()
-        {
+        function __onCameraMoveComplete() {
             _cameraTrackActive = false;
             _centralLight.position.set(_camera.position.x,_camera.position.y,_camera.position.z);
             console.log(_centralLight.position);
@@ -480,45 +449,31 @@
         }
 
         function __onFlagGeometryForUpdate(geom) {
-            if (geom.length != undefined)
-            {
+            if (geom.length != undefined) {
                 var i=0;
                 var limit = geom.length;
-                for(i=0;i<limit;++i)
-                {
+                for(i=0;i<limit;++i) {
                     geom[i].verticesNeedUpdate = true;
                 }
             }
-            else
-            {
+            else {
                 geom.verticesNeedUpdate = true;
             }
         }
 
-        function __onDocumentClick(evt)
-        {
-          //_counter = undefined;
+        function __onDocumentMouseWheel(evt) {
+            var d = evt.originalEvent.wheelDelta/5;
+            _cameraZoom -= d;
+            var theta = _mouseDeltaX/100 * 2 * Math.PI;
+            var tZ = _cameraTarget.position.z + _cameraZoom * Math.cos(theta);
+            TweenMax.to([_camera.position,_cameraLight.position],.2,{z:tZ});
         }
-
-
-        function __onDocumentMouseWheel(evt) 
-        {
-          var d = evt.originalEvent.wheelDelta/5;
-          _cameraZoom -= d;
-          var theta = _mouseDeltaX/100 * 2 * Math.PI;
-          var tZ = _cameraTarget.position.z + _cameraZoom * Math.cos(theta);
-          //_camera.position.z = tZ;
-          TweenMax.to([_camera.position,_cameraLight.position],.2,{z:tZ});
-        };
 
         function __onDocumentMouseMove(evt) {
            _mouse.x = ( evt.clientX / window.innerWidth ) * 2 - 1;
             _mouse.y = - ( evt.clientY / window.innerHeight ) * 2 + 1;
-           // TweenMax.to(local.nodesArr[local.rndSystem].rotation,1,{y:xSign * local.mouseX/180*Math.PI,x:ySign * local.mouseY/180*Math.PI});
-           if (_cameraTrackActive === false)
-           {
-            if (_mouseIsDown)
-            {
+           if (_cameraTrackActive === false) {
+            if (_mouseIsDown) {
                 _mouseDeltaX += (evt.clientX - _mouseStartX)*0.00001;
                 _mouseDeltaY += (evt.clientY - _mouseStartY)*0.00001;
                 var theta = _mouseDeltaX * 2 * Math.PI;
@@ -528,21 +483,10 @@
                 var tZ = _cameraTarget.position.z + _cameraZoom * Math.cos(theta);
                 TweenMax.to([_camera.position,_cameraLight.position],.2,{x:tX,y:tY,z:tZ});
             }
-            else
-            {
-                //var mouseX = (evt.clientX - _wHalfX)*0.05;
-                //var mouseY = -(evt.clientY - _wHalfY)*0.05;
-                //TweenMax.to(_camera.position,.2,{x:_cameraLight.position.x+mouseX,y:_cameraLight.position.y+mouseY,z:_cameraLight.position.z});
-            }
-                //console.log(_mouseStartX,_mouseStartY,_mouseDeltaX,_mouseDeltaY)
-             //TweenMax.to(_light,.2,{position:_cameraTarget.position});
            }
+        }
 
-        };
-
-
-        function __onNodeMove(nodeData)
-        {
+        function __onNodeMove(nodeData) {
             var connections = nodeData.getConnections();
             //var connections = connections.concat(nodeData.getIncomingConnections());
             var i=0;
@@ -550,13 +494,11 @@
             var node = nodeData.getVisualNode();
 
             node.updateMatrixWorld();
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 //connections[i]
                 connection = connections[i];
                 //console.log(connection);
-                if(connection.getVisualConnection() !== undefined)
-                {
+                if(connection.getVisualConnection() !== undefined) {
                     var connectedNodeData = _nodeDataManager.getNodeByID(connection.getConnectionNode())
                     var connectedNode = connectedNodeData.getVisualNode();
                     connectedNode.updateMatrixWorld();
@@ -570,8 +512,7 @@
             }
             var inConnections = nodeData.getIncomingConnections();
             var limit = inConnections.length;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 inConnection = inConnections[i];
                 var inNode = _nodeDataManager.getNodeByID(inConnection.getInitialNode()).getVisualNode()
                 if(inNode !== undefined && inConnection.getVisualConnection() !== undefined)
@@ -591,8 +532,7 @@
         }
 
 
-        function __onRollOverAttribute(nodeData)
-        {
+        function __onRollOverAttribute(nodeData) {
             var attrData = nodeData;
             while (attrData.getDataType() == 'Attribute')
             {
@@ -604,11 +544,9 @@
             _scope.$broadcast(ATTRIBUTE_ROLL_OVER,nodeData);
         }
 
-        function __onRollOutAttribute(nodeData)
-        {
+        function __onRollOutAttribute(nodeData) {
             var attrData = nodeData;
-            while (attrData.getDataType() == 'Attribute')
-            {
+            while (attrData.getDataType() == 'Attribute') {
                 var node = attrData.getVisualNode();
                 node.innerCore.material.color.setHex(_colorManager.getAttributeColor());
                 node.connection.material.color.setHex(_colorManager.getAttributeConnectionColor());
@@ -617,60 +555,26 @@
             _scope.$broadcast(ATTRIBUTE_ROLL_OVER,nodeData);
         }
 
-
-        function __onSelectAttribute(nodeData)
-        {
+        function __onSelectAttribute(nodeData) {
             _scope.$broadcast(ATTRIBUTE_SELECTED,nodeData);
         }
-
-
 
         function __onMouseDown(evt) {
             _mouseStartX = evt.clientX;
             _mouseStartY = evt.clientY;
             _mouseIsDown = true;
 
-
             console.log("Click.");
-    
+
             // update the mouse variable
             _mouse.x = ( evt.clientX / window.innerWidth ) * 2 - 1;
             _mouse.y = - ( evt.clientY / window.innerHeight ) * 2 + 1;
-            
             __checkForIntersections('click');
-
-            
         }
 
         function __onMouseUp(evt) {
             _mouseIsDown = false;
         }
-
-
-
-
-        function __onNeuronLightUpdate()
-        {
-            //console.log('update')
-        }
-
-        function __onNeuronLightMoved(neuronLightID)
-        {
-            var tween = _neuronLightTweens[neuronLightID];
-            //console.log(_neuronLightTweens[neuronLightID]);
-            //_neuronLightTweens[neuronLightID].time(0);
-            var time = Math.random()*10+10;
-            tween.duration(time);
-            //tween.totalDuration(time+1);
-
-            tween.updateTo({x:Math.random()*4000-2000,y:Math.random()*4000-2000,z:Math.random()*4000-2000},true);
-            tween.time(0);
-            //tween.updateTo({x:Math.random()*4000-2000,y:Math.random()*4000-2000,z:Math.random()*4000-2000}, true);
-            //tween.updateTo({x:Math.random()*4000-2000,y:Math.random()*4000-2000,z:Math.random()*4000-2000},true);
-        }
-
-
-
 
         function __onWindowResize(evt) {
           _wHalfX = window.innerWidth / 2;
@@ -679,17 +583,7 @@
           _camera.aspect = window.innerWidth / window.innerHeight;
           _camera.updateProjectionMatrix();
           _renderer.setSize( window.innerWidth, window.innerHeight );
-          //local.render();  
-        };
-
-
-
-        /////////////////////////
-        //   GETTERS & SETTERS
-        //////////////////////////
-
-
-
+        }
 
         //////////////////////////////////
         //   PRIVATE FUNCTIONS
@@ -786,8 +680,6 @@
             ctx.stroke();
         }
 
-
-
         /// Helper color functions can be moved to external class.
         function __rgbToHex(R,G,B) {
           return __toHex(R)+__toHex(G)+__toHex(B);
@@ -821,38 +713,10 @@
             return new THREE.Vector3(destX,destY,destZ)
         }
 
-        /*function __calcTheta(vec1,vec2)
-        {
-            //var theta = Math.acos((vec2.z - vec1.z));
-            var axis = new THREE.Vector3();
-            axis.subVectors(vec2,vec1);
-            axis.normalize();
-            var theta = Math.acos(axis.y);
-            //console.log(vec2.z,vec1.z,theta);
-            return theta;
-        }
-
-        function __calcPhi(vec1,vec2,theta)
-        {
-            var axis = new THREE.Vector3();
-            axis.subVectors(vec2,vec1);
-            axis.normalize();
-            var phi = Math.acos((axis.x)/Math.sin(theta));
-            return phi;
-        }
-*/
-        
-
-
-
-
         /////////////////////////
         //  Collision Detection
 
-
-
-        function __checkForIntersections(action)
-        {
+        function __checkForIntersections(action) {
 
             // find intersections
 
@@ -866,56 +730,40 @@
             var intersects = ray.intersectObjects( _targetList );
             //console.log(_targetList);
             // if there is one (or more) intersections
-            if ( intersects.length > 0 )
-            {
-
+            if ( intersects.length > 0 ) {
                 //if (action == '')
                 //console.log(intersects)
                 var first = intersects[0];
-                
-                if(first.object.parent.nodeData !== undefined)
-                {
-                    if (_mouseOverObject !== undefined  && _mouseOverObject !== intersects[0])
-                    {
+
+                if(first.object.parent.nodeData !== undefined) {
+                    if (_mouseOverObject !== undefined  && _mouseOverObject !== intersects[0]) {
                         __onRollOutAttribute(_mouseOverObject.object.parent.nodeData)
                     }
-                    if(first.object.parent.nodeData.getDataType() == 'Attribute')
-                    {
-                        if(action == 'click')
-                        {   
+                    if(first.object.parent.nodeData.getDataType() == 'Attribute') {
+                        if(action == 'click') {
                             __onSelectAttribute(first.object.parent.nodeData);
                         }
-                        else
-                        {
+                        else {
                             _mouseOverObject = first;
                             __onRollOverAttribute(first.object.parent.nodeData);
                         }
-                        
                     }
-                    
                 }
-                else
-                {
+                else {
                     console.log('none node selection');
                     console.log(intersects[0]);
                 }
-                
                 // change the color of the closest face.
                 //intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
                 //intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
             }
-            else
-            {
-                if (_mouseOverObject !== undefined)
-                {
+            else {
+                if (_mouseOverObject !== undefined) {
                     __onRollOutAttribute(_mouseOverObject.object.parent.nodeData)
                 }
                 _mouseOverObject = undefined;
             }
         }
-
-
-
 
 
         /////////////////////////
@@ -2081,8 +1929,7 @@
             return sphere;
         }
 
-        function __generateSphereSystem(radius,complexity,wireframe,variation)
-        {
+        function __generateSphereSystem(radius,complexity,wireframe,variation) {
             var mat = __generateSphereMaterial(wireframe,variation,true);
             var geom = __generateSphereGeometry(radius*4,4,variation*4);
 
@@ -2092,23 +1939,19 @@
             var i=0;
             var limit = 9;
             for (i=0;i<limit;++i) {
-                if (i<2)
-                {
+                if (i<2) {
                     var pGeom = __generateSphereGeometry(radius*2,complexity,variation*2);
                     var pMat = _nodePartMat.clone();
                 }
-                else if(i>2 && i < 7)
-                {
+                else if(i>2 && i < 7) {
                     var pGeom = __generateSphereGeometry(radius*5,complexity-1,variation*3);
                     var pMat = _nodePartMat.clone();
                 }
-                else if(i> 7)
-                {
+                else if(i> 7) {
                     var pGeom = __generateSphereGeometry(radius*i,complexity-2,variation);
                     var pMat = _distantNodePartMat.clone();
                 }
                 _particleGeomsArray.push(pGeom);
-                //__generateParticleGeometry(3000,5000,2000);
                 // path to the texture
                 var texturePath = 'assets/images/theme-' +
                     window.nara.theme +
@@ -2394,7 +2237,7 @@
             for( var i = 0; i < _particleShaderMaterial.attributes.alpha.value.length; i ++ ) {
                 // dynamically change alphas
                 _particleShaderMaterial.attributes.alpha.value[ i ] *= 0.995;
-                if ( _particleShaderMaterial.attributes.alpha.value[ i ] < 0.05 ) { 
+                if ( _particleShaderMaterial.attributes.alpha.value[ i ] < 0.05 ) {
                     _particleShaderMaterial.attributes.alpha.value[ i ] = 1.0;
                 }
             }
