@@ -222,8 +222,7 @@
          * @param Boolean fly true to Jump directly, false to tween to the node.
          * @param Number speed how fast to focus on the node.
          */
-        function targetNode(nodeData,delay,fly, speed)
-        {
+        function targetNode(nodeData,delay,fly, speed) {
             //todo: proper error handling up in framework with warning of no data
             // todo2: create node in nether space and link, then move to.
             if (nodeData == undefined) return;
@@ -260,11 +259,9 @@
             __activateNodeModel(nodeData)
         }
 
-        function isolateNode(nodeData, speed)
-        {
+        function isolateNode(nodeData, speed) {
             if (speed === undefined) speed = 1;
-            if (_isolatedNode !== undefined) // return previous to outer rim
-            {
+            if (_isolatedNode !== undefined) { // return previous to outer rim 
                 //console.log(_isolatedNode.coreRange)
                 var returnVect = __randomSphereVector(Math.random()*_isolatedNode.coreRange + 50)
                 TweenMax.to(_isolatedNode.position,1,{x:returnVect.x,y:returnVect.y,z:returnVect.z, ease:Quad.easeIn,onUpdate:__onNodeMove,onUpdateParams:[_isolatedNode.nodeData]});
@@ -275,8 +272,7 @@
             _isolatedNode = node;
         }
 
-        function connectNode(nodeData,ribbons,spark)
-        {
+        function connectNode(nodeData,ribbons,spark) {
             var node = nodeData.getVisualNode();
             var i=0;
             var limit = nodeData.connections.length;
@@ -304,8 +300,7 @@
             }
         }
 
-        function clusterNode(nodeData)
-        {
+        function clusterNode(nodeData) {
             var node = nodeData.getVisualNode();
             node.isClustered = true;
             if (node === undefined) return;
@@ -694,20 +689,18 @@
         }
 
 
-        function __randomSphereVector(range)
-        {
+        function __randomSphereVector(range) {
             var theta = Math.random()*2*Math.PI;
             var phi = Math.random()*Math.PI;
-            var destX =  range*Math.sin(theta)*Math.cos(phi);//  
-            var destY =  range*Math.sin(theta)*Math.sin(phi);// 
+            var destX =  range*Math.sin(theta)*Math.cos(phi);
+            var destY =  range*Math.sin(theta)*Math.sin(phi);
             var destZ =  range*Math.cos(theta);
             return new THREE.Vector3(destX,destY,destZ)
         }
 
-        function __sphericalPosition(range,theta,phi)
-        {
-            var destX =  range*Math.sin(theta)*Math.cos(phi);//  
-            var destY =  range*Math.sin(theta)*Math.sin(phi);// 
+        function __sphericalPosition(range,theta,phi) {
+            var destX =  range*Math.sin(theta)*Math.cos(phi);
+            var destY =  range*Math.sin(theta)*Math.sin(phi);
             var destZ =  range*Math.cos(theta);
             //console.log(range,theta,phi)
             return new THREE.Vector3(destX,destY,destZ)
@@ -1256,8 +1249,7 @@
           return connection;
         }
 
-        function __generateConnectionPulse(weight,v1,v2)
-        {
+        function __generateConnectionPulse(weight,v1,v2) {
           var connectGeom = new THREE.Geometry();
           var connectMat = _lineConnectionMats[2];//weight];//_positiveHighConnectionMat;//_baseLineConnectionMat;//
           if(connectMat == undefined) console.log(weight);
@@ -1276,8 +1268,7 @@
           var tl = new TimelineMax({repeat:-1,repeatDelay:1,onUpdate:__onFlagGeometryForUpdate,bezier:bezierObj,onUpdateParams:[connectGeom]});
           tl.addLabel('fire');
           tl.addLabel('finish','fire += 1')
-          for (i=0;i<=limit;++i)
-          {
+          for (i=0;i<=limit;++i) {
             var vect = new THREE.Vector3();
             var spread = limit;
 
@@ -1315,7 +1306,7 @@
         }
 
         function __updateConnectionLine(connection,v1,v2) {
-            connectGeom = connection.getVisualConnection().geometry; 
+            connectGeom = connection.getVisualConnection().geometry;
             connectGeom.vertices[0].set(v1);
             var i=0;
             var dist = v1.distanceTo(v2);
@@ -1340,7 +1331,6 @@
                      connectGeom.vertices[i] = v2;
                 }
             }
-
             connectGeom.verticesNeedUpdate = true;
         }
 
@@ -1827,68 +1817,6 @@
         ///////////////
         // Geometry generation functions
 
-        function __generateAttributeGeometry(nodes, range) {
-            var geometry = new THREE.Geometry();
-            if (nodes === undefined) nodes = 100;
-            nodes = Math.floor(nodes);
-            if (range === undefined) range = 500;
-            var tweenArr = [];
-            var groupVelocity = Math.random()*6+0.2; 
-            //local.particleGroupVelocity.push(groupVelocity);
-            //local.particleTweens[systemID] = tweenArr;
-            for ( i = 0; i < nodes; i ++ ) {
-                var vertex = new THREE.Vector3();
-
-                var theta = Math.random()*2*Math.PI;
-                var phi = Math.random()*Math.PI;
-
-                var initX =  range*Math.cos(theta)*Math.cos(phi);
-                var initY =  range*Math.sin(theta)*Math.sin(phi);
-                var initZ =  range*Math.cos(theta); 
-
-                vertex.x = initX;
-                vertex.y = initY;
-                vertex.z = initZ;
-                geometry.vertices.push( vertex );
-            }
-            return geometry;
-        }
-
-
-        function __generateParticleGeometry(nodes, range, variation) {
-          var geometry = new THREE.Geometry();
-          if (nodes === undefined) nodes = 100;
-          nodes = Math.floor(nodes);
-          if (range === undefined) range = 500;
-          if (variation === undefined) variation = 0;
-          var tweenArr = [];
-          var groupVelocity = Math.random()*6+0.2; 
-          //local.particleGroupVelocity.push(groupVelocity);
-          //local.particleTweens[systemID] = tweenArr;
-          for ( i = 0; i < nodes; i ++ ) {
-
-            var vertex = new THREE.Vector3();
-
-            var initTheta = Math.random()*2*Math.PI;
-            var initPhi = Math.random()*Math.PI;
-            var theta = initTheta;
-            var phi = initPhi;
-
-            var varFactor = Math.random()*variation-(variation>>1);
-
-            var initX =  (varFactor+range)*Math.sin(initTheta)*Math.cos(initPhi);//  
-            var initY =  (varFactor+range)*Math.sin(initTheta)*Math.sin(initPhi);// 
-            var initZ =  (varFactor+range)*Math.cos(initTheta); 
-
-            vertex.x = initX;
-            vertex.y = initY;
-            vertex.z = initZ;
-            geometry.vertices.push( vertex );
-          }
-          return geometry;
-        }
-
-
         function __generateSphereGeometry(radius,complexity,variation) {
           console.log(complexity)
           var geometry = new THREE.OctahedronGeometry(radius,complexity);
@@ -1973,86 +1901,6 @@
                 sphere.add(parts);
             }
             return sphere;
-        }
-
-
-        /////////////////////////////////
-        // Attribute Creation
-        ////////////////////////
-
-
-        /**
-         * __generateAttribute takes a NodeAttribute object and constructs
-         * a THREE.Object3D object; then adds it to the THREE.js visual node.
-         *
-         * @param NodeAttribute A node attribute object e.g. cuisine.
-         * @return THREE.Object3D object to be rendered to the display.
-         */
-        function __generateAttribute(attrData)
-        {
-            var mat;
-            var geom;
-            var node;
-            var container = attrData.getParent().getVisualNode();
-            var parent = attrData.getParent();
-
-            var attribute = new THREE.Object3D();//THREE.PointCloud( geom, mat );  
-            attribute.nodeData = attrData;
-
-            var material = new THREE.MeshLambertMaterial({
-                color:'#ffffff',//+Math.floor(Math.random()*16777215).toString(16), //678967
-                //blending:THREE.AdditiveBlending,
-                shading: THREE.SmoothShading,
-                //side:THREE.FrontSide,
-                wireframe:false
-            });
-
-            var rnd = 1;//Math.floor(Math.random()*2);
-            var tier = attrData.getTier();
-            ////////////////
-            //CLUMPING
-
-            var coreSize = container.coreSize*((tier == 0) ? 0.15 : 1.55);//Math.random()*2+2;
-            var coreRange =  container.coreSize*1.4*(tier+1)*(tier+1);
-
-            ////////////////
-            // BRANCHING
-
-            var mat = material;//_attributeTextureMat;//material;//(type==1) ? _wireframeMat : _wireframeMat;
-            var innerCore = new THREE.Object3D();//THREE.Mesh( geom, mat);
-            attribute.add(innerCore);
-            attribute.coreRange = coreRange;
-            attribute.innerCore = innerCore;
-            attribute.coreSize = coreSize;
-
-            theta = /*(container.theta !== undefined) ? container.theta :*/ Math.random()*2*Math.PI;
-            phi =/* (container.phi !== undefined) ? container.phi : */attrData.getOrder()/*Math.random()*/*Math.PI;
-            var range = coreRange;//attribute.coreRange;// + 10;
-            var initX =  range*Math.sin(theta)*Math.cos(phi);//  
-            var initY =  range*Math.sin(theta)*Math.sin(phi);// 
-            var initZ =  range*Math.cos(theta); 
-            attribute.position.x = initX;//Math.random()*1000-500;
-            attribute.position.y = initY;//Math.random()*1000-500;
-            attribute.position.z = initZ;//Math.random()*1000-500;
-
-            attribute.theta = theta;
-            attribute.phi = phi;
-
-
-            //TweenMax.from(attribute.position,1,{delay:tier+1,x:0,y:0,z:0})
-            container.add(attribute);
-
-            //branching
-            var connection = __linkAttributes(null,true,container,attribute,0.5)
-            attribute.connection = connection;
-            //attribute.add(connection);
-
-            attrData.setVisualNode(attribute);
-
-            // for mouseover function on attributes;
-            //_targetList.push(attribute.innerCore);
-
-            return attribute;
         }
 
 
