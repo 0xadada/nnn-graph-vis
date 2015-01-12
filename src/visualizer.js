@@ -1,4 +1,4 @@
-(function() { 
+(function() {
     app.factory('Visualizer', function($http,$log,$rootScope,NodeDataManager,ColorManager) {
 
         var INITIALIZE = 'Visualizer: INITIALIZE';
@@ -116,11 +116,8 @@
             var fogColor = new THREE.Color(_colorManager.getFogColor());
             //_scene.fog = new THREE.FogExp2( 0x232345, 0.0006 );
             _scene.fog = new THREE.FogExp2( fogColor, 0.0026 );
-            console.log(fogColor);
 
             _materialDepth = new THREE.MeshDepthMaterial();
-            //TweenMax.to(fogColor,1,{r:255,g:255,b:255,repeat:-1,yoyo:true})
-            //TweenMax.to(_scene.fog,1,{density:0,repeat:-1,yoyo:true})
 
             __initializeNodeTextures();
 
@@ -1055,12 +1052,17 @@
                 {
                     var xSpacing = 1/nLimit;
                     var xOffset = xSpacing * n;
-                    var textureUV = [new THREE.Vector2(xOffset, yOffset), new THREE.Vector2(xSpacing+xOffset, yOffset), new THREE.Vector2(xSpacing+xOffset, ySpacing+yOffset), new THREE.Vector2(xOffset, ySpacing+yOffset)];
+                    var textureUV = [
+                        new THREE.Vector2(xOffset, yOffset),
+                        new THREE.Vector2(xSpacing+xOffset, yOffset),
+                        new THREE.Vector2(xSpacing+xOffset, ySpacing+yOffset),
+                        new THREE.Vector2(xOffset, ySpacing+yOffset)
+                    ];
                     _textureUvs.push(textureUV);
                 }
             }
 
-            _attrGlowMat = new THREE.ShaderMaterial( 
+            _attrGlowMat = new THREE.ShaderMaterial(
             {
                 uniforms:
                 {
@@ -1108,7 +1110,6 @@
                 blending: THREE.AdditiveBlending,
                 transparent: true
             });
-
 
             _particleShaderMaterial = new THREE.ShaderMaterial( {
                 uniforms:       {
@@ -1200,7 +1201,6 @@
         }
 
         function __generateSphereMaterial(wireframe,variation,backFacing) {
-
             if (backFacing === undefined) backFacing = true;
             var material = new THREE.MeshPhongMaterial({ 
                 shading: THREE.NormalShading,
@@ -1210,16 +1210,9 @@
                 transparent: true,
                 side:(backFacing) ? THREE.BackSide : THREE.FrontSide
             });
-            if (variation)
-            {
+            if (variation) {
                 material.vertexColors = THREE.FaceColors;
-            //
             }
-            else
-            {
-                //material.color = '#'+Math.floor(Math.random()*16777215).toString(16);
-            }
-            //local.materials.push(material);
             return material;
         };
 
@@ -1228,17 +1221,14 @@
         ////////////////
         //node helper functions
 
-        function __alignNodeAttributes(node,range,delay,speed)
-        {
-            //var node = nodeData.getVisualNode();
+        function __alignNodeAttributes(node, range, delay, speed) {
             if (speed === undefined) speed = 1
             var attributesCloud = node.attributesCloud;
             var verts = attributesCloud.geometry.vertices;
             var i=0;
             var limit = verts.length;
 
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 var initDelay = delay;
                 var vertex = verts[i];
                 //console.log(vertex);
@@ -1254,38 +1244,44 @@
                 //vertex.z = initZ;
                 if (i<2) initDelay = 0;
 
-                var tween = TweenMax.to(vertex,speed,{ease:Quad.easeOut,x:destX,y:destY,z:destZ,delay:initDelay*i,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[attributesCloud.geometry]});
-                //console.log(tween);
+                var tween = TweenMax.to(vertex, speed,{
+                    ease : Quad.easeOut,
+                    x    : destX,
+                    y    : destY,
+                    z    : destZ,
+                    delay: initDelay*i,
+                    onUpdate : __onFlagGeometryForUpdate,
+                    onUpdateParams : [attributesCloud.geometry]
+                });
             }
             attributesCloud.geometry.verticesNeedUpdate = true;
         }
 
-        function __scatterNodeAttributes(node,range)
-        {
-            //var node = nodeData.getVisualNode();
+        function __scatterNodeAttributes(node,range) {
             var attributesCloud = node.attributesCloud;
             var verts = attributesCloud.geometry.vertices;
             var i=0;
             var limit = verts.length;
-            for (i=0;i<limit;++i)
-            {
-
+            for (i=0;i<limit;++i) {
                 var vertex = verts[i];
-                //console.log(vertex);
                 var theta = Math.random()*2*Math.PI;
                 var phi = Math.random()*Math.PI;
                 var range = range;
-                var destX =  range*Math.sin(theta)*Math.cos(phi);//  
-                var destY =  range*Math.sin(theta)*Math.sin(phi);// 
-                var destZ =  range*Math.cos(theta);
-                var tween = TweenMax.to(vertex,1,{x:destX,y:destY,z:destZ,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[attributesCloud.geometry]});
+                var destX = range*Math.sin(theta)*Math.cos(phi);//  
+                var destY = range*Math.sin(theta)*Math.sin(phi);// 
+                var destZ = range*Math.cos(theta);
+                var tween = TweenMax.to(vertex, 1, {
+                    x : destX,
+                    y : destY,
+                    z : destZ,
+                    onUpdate : __onFlagGeometryForUpdate,
+                    onUpdateParams : [attributesCloud.geometry]
+                });
             }
             attributesCloud.geometry.verticesNeedUpdate = true;
         }
 
-        
-        function __calcPhi(vec1,vec2)
-        {
+        function __calcPhi(vec1,vec2) {
             var phi = Math.atan((vec1.y-vec2.y)/(vec1.x-vec2.x))
             return phi;
         }
@@ -1298,20 +1294,18 @@
             var theta = Math.acos(zD/(Math.sqrt(xD+yD+zD)));
             return theta;
         }
+
         /////////////////////
         //  linking functions
-
 
         function __linkAttributes(connectionData,ribbons,node1,node2,signalStrength)
         {
             var weight;
             // refactor into two seperate functions for attributes and nodes.
-            if (connectionData === null)
-            {
+            if (connectionData === null) {
                 weight = 0;//'attr'
             }
-            else
-            {
+            else {
                 weight = connectionData.getWeight();
             }
             var connectNode = node2;
@@ -1324,8 +1318,7 @@
             var connectionPointWorld = connectNode.parent.localToWorld(connectNode.position.clone());
             var connectionLocal = node1.worldToLocal(connectionPointWorld.clone());
             connectionLocal.x += 0;
-            if (ribbons)
-            {
+            if (ribbons) {
                 var theta = __calcTheta(node1.position,node2.position);
                 var phi = __calcPhi(node1.position,node2.position);
                 var startVector = __sphericalPosition(node1.coreSize,theta,phi);
@@ -1334,8 +1327,7 @@
                 node1.updateMatrixWorld();
                 connection.updateMatrixWorld();
             }
-            else
-            {
+            else {
                 var connection = __generateConnectionLine(weight,new THREE.Vector3(0,0,0),connectionLocal);
                 node1.add(connection);
             }
@@ -1343,16 +1335,13 @@
             return connection;
         }
 
-        function __linkNodes(connectionData,ribbons,node1,node2,signalStrength)
-        {
+        function __linkNodes(connectionData,ribbons,node1,node2,signalStrength) {
             var weight;
             // refactor into two seperate functions for attributes and nodes.
-            if (connectionData === null)
-            {
+            if (connectionData === null) {
                 weight = 0;//'attr'
             }
-            else
-            {
+            else {
                 weight = connectionData.getWeight();
             }
             var connectNode = node2;
@@ -1364,38 +1353,26 @@
 
             var connectionPointWorld = connectNode.parent.localToWorld(connectNode.position.clone());
             var connectionLocal = node1.worldToLocal(connectionPointWorld.clone());
-            if (ribbons)
-            {
-                //var connection = __generateConnectionRibbon(weight,new THREE.Vector3(0,0,0),connectionLocal,true,signalStrength);
+            if (ribbons) {
                 var connection = __generateConnectionNerve(node1.coreSize,new THREE.Vector3(0,0,0),connectionLocal,true,signalStrength);
                 node1.add(connection);
                 var connection2 = __generateConnectionPulse(node1.coreSize,new THREE.Vector3(0,0,0),connectionLocal,true,signalStrength);
                 node1.add(connection2);
-                //var connection2 = __generateConnectionLightning(weight,new THREE.Vector3(0,0,0),connectionLocal,true,signalStrength);
-                //node1.add(connection2);
-                
                 node1.updateMatrixWorld();
                 connection.updateMatrixWorld();
             }
-            else
-            {
+            else {
                 var connection = __generateConnectionLine(weight,new THREE.Vector3(0,0,0),connectionLocal);
                 node1.add(connection);
-                //var connection2 = __generateConnectionPulse(weight,new THREE.Vector3(0,0,0),connectionLocal);
-                //node1.add(connection2);
             }
             if(connectionData !== null) connectionData.setVisualConnection(connection);
 
-           // console.log(node2.nodeData);
             linkedConnection = node2.nodeData.addIncomingConnection(node1.nodeData.getID(),connectionData.getWeight());
             linkedConnection.setVisualConnection(connection);
-            /// locate second node add incoming connection and set its visual node to this connection.
-            //cNode.addIncomingConnection(cData.getInitialNode(),cData.getWeight());
             return connection;
         }
 
-        function __generateConnectionLine(weight,v1,v2)
-        {
+        function __generateConnectionLine(weight,v1,v2) {
           var connectGeom = new THREE.Geometry();
           var connectMat = _lineConnectionMats[1];//weight];//_positiveHighConnectionMat;//_baseLineConnectionMat;//
           if(connectMat == undefined) console.log(weight);
@@ -1411,34 +1388,33 @@
           var limit = Math.ceil(dist/30);//+100;
           var vectorOffset = new THREE.Vector3(0,0,0);
           var prevVector = new THREE.Vector3(0,0,0);
-          for (i=0;i<=limit;++i)
-          {
+          for (i=0;i<=limit;++i) {
             var vect = new THREE.Vector3();
             var spread = limit;
-            
+
             var avgDist = (Math.abs(xDist) + Math.abs(yDist) + Math.abs(zDist))/3
             var minDist = Math.min(xDist,yDist,zDist);
 
-            //vectorOffset.add(new THREE.Vector3((Math.random()-0.5)*dist/100,(Math.random()-0.5)*dist/100,(Math.random()-0.5)*dist/100))
             vectorOffset = (new THREE.Vector3((Math.sin(i/limit*Math.PI*2)),(Math.cos(i/limit*Math.PI*2)),(Math.sin(i/limit*Math.PI*2))));
-            
-             //vect.x = ((xDist/limit)*i) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-             //vect.y = ((yDist/limit)*i) + (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-            // vect.z = ((zDist/limit)*i) + (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-             //TweenMax.from(vect,i/limit*2,{ease:Linear.easeNone,x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
+
             var tarX = ((xDist/limit)*i) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;//
             var tarY = ((yDist/limit)*i) + (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// 
             var tarZ = ((zDist/limit)*i) + (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// 
-            TweenMax.to(vect,.3,{delay:i/limit,ease:Linear.easeNone,x:tarX,y:tarY,z:tarZ,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-            
+            TweenMax.to(vect, 0.3, {
+                delay : i/limit,
+                ease : Linear.easeNone,
+                x : tarX,
+                y : tarY,
+                z : tarZ,
+                onUpdate : __onFlagGeometryForUpdate,
+                onUpdateParams : [connectGeom]
+            });
 
             prevVector = vect;
             connectGeom.vertices.push(vect);
           }
 
           var connection = new THREE.Line(connectGeom,connectMat.clone());
-          //console.log(connection);
-          //connection.add(electrons);
           return connection;
         }
 
@@ -1466,26 +1442,18 @@
           {
             var vect = new THREE.Vector3();
             var spread = limit;
-            
+
             var avgDist = (Math.abs(xDist) + Math.abs(yDist) + Math.abs(zDist))/3
             var minDist = Math.min(xDist,yDist,zDist);
 
-            //vectorOffset.add(new THREE.Vector3((Math.random()-0.5)*dist/100,(Math.random()-0.5)*dist/100,(Math.random()-0.5)*dist/100))
             vectorOffset = (new THREE.Vector3((Math.sin(i/limit*Math.PI*2)),(Math.cos(i/limit*Math.PI*2)),(Math.sin(i/limit*Math.PI*2))));
-            
-            
-             //vect.x = ((xDist/limit)*i) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-             //vect.y = ((yDist/limit)*i) + (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-            // vect.z = ((zDist/limit)*i) + (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-             //TweenMax.from(vect,i/limit*2,{ease:Linear.easeNone,x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
+
             var tarX = ((xDist/limit)*i) + (vectorOffset.x) *2*((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;//
             var tarY = ((yDist/limit)*i) + (vectorOffset.y) *2*((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// 
             var tarZ = ((zDist/limit)*i) + (vectorOffset.z) *2*((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// 
-            vect.x = 0;//((xDist/limit)*i) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;//
-            vect.y = 0;//((yDist/limit)*i) + (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// 
-            vect.z = 0;//((zDist/limit)*i) + (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// 
-            // SPIRAL BEZ  //bezPath = bezPath.concat([{x:100*(Math.random()-0.5), y:100*(Math.random()-0.5), z:100*(Math.random()-0.5)}]);
-            // SPIRAL BEZ  //outputPath = bezPath.concat([{x:10*(Math.random()-0.5), y:10*(Math.random()-0.5), z:10*(Math.random()-0.5)}]);
+            vect.x = 0;
+            vect.y = 0;
+            vect.z = 0;
             bezPath = bezPath.concat([{x:tarX+20*(Math.random()-0.5), y:tarY+20*(Math.random()-0.5), z:tarZ+20*(Math.random()-0.5)}]);
             var outputPath = bezPath.concat([{x:tarX, y:tarY, z:tarZ}])
 
@@ -1495,80 +1463,50 @@
 
             tl.to(vect,speed,{ease:Linear.easeNone,x:tarX,y:tarY,z:tarZ, bezier:bezierObj},'fire');
             tl.to(vect,speed*0.25,{ease:Linear.easeNone,x:v2.x,y:v2.y,z:v2.z},'finish');
-            //tl.to(vect,.2,{ease:Elastic.easeInOut,x:v2.x,y:v2.y,z:v2.z});
-
-             //var tl = new TimelineMax({repeat:-1, repeatDelay:.4,onUpdate:__onFlagGeometryForUpdate,bezier:bezierObj,onUpdateParams:[connectGeom]});
-             //tl.to(vect,2,{ease:Linear.easeNone,bezier:bezierObj,x:tarX,y:tarY,z:tarZ},'fire');
-             //tl.to(vect,.2,{ease:Elastic.easeInOut,x:v2.x,y:v2.y,z:v2.z});
-
-           // SPIRAL TWEEN // TweenMax.to(vect,2,{delay:i/limit,ease:Linear.easeNone,x:tarX,y:tarY,z:tarZ,bezier:bezierObj,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom],repeat:-1});
-            
-            
 
             prevVector = vect;
             connectGeom.vertices.push(vect);
           }
-         // connectGeom.vertices.push(connectionP);
-
-          //var mat = local.generateParticleMaterial(10);
-          //var electrons = new THREE.PointCloud( connectGeom, mat );
 
           var connection = new THREE.Line(connectGeom,connectMat.clone());
-          //console.log(connection);
-          //connection.add(electrons);
           return connection;
         }
 
-        function __updateConnection(connection,v1,v2)
-        {
+        function __updateConnection(connection,v1,v2) {
             __updateConnectionLine(connection,v1,v2);
         }
 
-        function __updateConnectionLine(connection,v1,v2)
-        {
+        function __updateConnectionLine(connection,v1,v2) {
             connectGeom = connection.getVisualConnection().geometry; 
-            //console.log('------------');
-            //console.log(connectGeom);
             connectGeom.vertices[0].set(v1);
             var i=0;
             var dist = v1.distanceTo(v2);
-            //console.log(connectGeom.vertices);
             var xDist = (v2.x - v1.x);
             var yDist = (v2.y - v1.y);
             var zDist = (v2.z - v1.z);
 
             var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
             var spread = limit;
-            for (i=1;i<limit;++i)
-            {
+            for (i=1;i<limit;++i) {
                 var vect = new THREE.Vector3();
-                
-                /*var xDist = (v2.x - v1.x);
-                var yDist = (v2.y - v1.y);
-                var zDist = (v2.z - v1.z);
-                
-                vect.x = ((xDist/limit)*i) + Math.sin(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2// + Math.random()*4-2;
-                vect.y = ((yDist/limit)*i) + Math.cos(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2// + Math.random()*4-2;
-                vect.z = ((zDist/limit)*i) + Math.sin(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2// + Math.random()*4-2;*/
 
                 vectorOffset = (new THREE.Vector3((Math.sin(i/limit*Math.PI*2)),(Math.cos(i/limit*Math.PI*2)),(Math.sin(i/limit*Math.PI*2))));
-            
-                vect.x = ((xDist/limit)*i) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                vect.y = ((yDist/limit)*i) + (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-i)))+ Math.random()-0.5;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                vect.z = ((zDist/limit)*i) + (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-i)))+ Math.random()-0.5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-             
+
+                vect.x = ((xDist/limit)*i) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i))) + Math.random()-0.5;
+                vect.y = ((yDist/limit)*i) + (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-i)))+ Math.random()-0.5;
+                vect.z = ((zDist/limit)*i) + (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-i)))+ Math.random()-0.5;
+
                 connectGeom.vertices[i] = vect;
                 if(i==limit-1)
                 {
                      connectGeom.vertices[i] = v2;
                 }
             }
-            
+
             connectGeom.verticesNeedUpdate = true;
         }
 
-        function __generateAttributeNerve(coreSize,v1,v2,motion)
-        {
+        function __generateAttributeNerve(coreSize,v1,v2,motion) {
             var dist = v1.distanceTo(v2);
             var weight = 0;
             var connectGeom = new THREE.PlaneGeometry(0.1*(Math.abs(weight)+1),dist/10,1,Math.ceil(dist/2));
@@ -1614,30 +1552,8 @@
                 var speed = i/200;
 
                 tl.to(vect,speed,{ease:Linear.easeOut,x:tarX,y:tarY,z:tarZ},'fire');
-                if(i==2)
-                {
-                    //TweenMax.to([vect,vectG],1,{x:'+='+Math.random()*2,y:'+='+Math.random()*2,z:'+='+Math.random()*2,repeat:-1,yoyo:true,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[[connectGeom,glowGeom]]});
-                    //TweenMax.to(vect,1,{x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-
-                }
-                else
-                {
-                    //TODO: Set speed to a value of signal pulse intensity, smaller the faster the pulses transmit, 1 second max one 
-                    //TweenMax.to([vect,vectG],.3,{ease:Bounce.easeInOut,delay:i/100,x:'+='+(Math.cos(counter)*dist*0.005),y:'+='+(Math.cos(counter)*dist*0.005),z:'+='+(Math.cos(counter)*dist*0.005),repeat:-1,yoyo:true});
-                }
-                //TweenMax.from(vect,.3,{ease:Bounce.easeInOut,delay:i/100,x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-                //var xPos = ((xDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-                //var yPos = ((yDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200);// + Math.random() *2 - 1;
-                //var zPos = ((zDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-
-                //vect.x = xPos;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.y = yPos;//((yDist/limit)*i) + Math.cos(i/4)*(dist/100) + Math.random() *2 - 1;//Math.cos(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.z = zPos;//((zDist/limit)*i) + Math.sin(i/4)*(dist/100) + Math.random() *2 - 1;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //connectGeom.vertices[i] = vect;
             }
-            //connectGeom.vertices[0] = originP;
-            //connectGeom.vertices[1] = originP;
-            
+
             connectGeom.vertices[limit-2] = connectionP;
             connectGeom.vertices[limit-1] = connectionP;
 
@@ -1646,34 +1562,13 @@
             var rndUV = _ribbonUvs[ribbonWeight];
             //console.log(ribbonWeight)
             //var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 var face = connectGeom.faces[i];
-                 //var val = Math.floor(Math.random()*55)+200;
-                // var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-                //var hex = '0x'+__rgbToHex(val,val,val);
-                
-               // var hex = 0xff0000;
-                //connectGeom.faces[ i ].color.setHex( hex );
-                //connectGeom.faceVertexUvs[0][i] = [ rndUV[0], rndUV[1], rndUV[2] ];
             }
 
-          
-          //connectGeom.vertices.push(connectionP);
-          //glowGeom = connectGeom.clone()
-          //var mat = local.generateParticleMaterial(10);
-          //var electrons = new THREE.PointCloud( connectGeom, mat );
-
-          var connection = new THREE.Mesh(connectGeom,connectMat);
-          connection.material.side = THREE.DoubleSide;
-         // var glow = new THREE.Mesh( glowGeom, _ribbonGlowMat.clone() );
-            //glow.material.side = THREE.DoubleSide;
-            //glow.scale.multiplyScalar(1.02);
-            //_glows.push(glow);
-            //_electrifiedGlows.push(glow);
-            //connection.add( glow );
-          //connection.add(electrons);
-          return connection;
+            var connection = new THREE.Mesh(connectGeom,connectMat);
+            connection.material.side = THREE.DoubleSide;
+            return connection;
         }
 
 
@@ -1708,21 +1603,13 @@
                 //todo increment by 2 to keep nodes next to each other 
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];//new THREE.Vector3();
-                
 
-                    //todo: Refactor this.
-                //vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-            
-                //vect.x = ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.y = ((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.cos((counter/4)-Math.PI/2);//*(dist/200);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.z = ((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                
                 vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-                
-                tarX = v1.x + Math.sin(counter/spread*10) + ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;//(Math.abs(weight*14))+ (vectorOffset.x) *2;// *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                tarY = v1.y + Math.cos(counter/spread*10) + ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;//(Math.abs(weight*14))+ (vectorOffset.y) *2;// *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                tarZ = v1.z + Math.sin(counter/spread*10) + ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;//(Math.abs(weight*14))+ (vectorOffset.z) *2;// *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-           
+
+                tarX = v1.x + Math.sin(counter/spread*10) + ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;
+                tarY = v1.y + Math.cos(counter/spread*10) + ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;
+                tarZ = v1.z + Math.sin(counter/spread*10) + ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;
+
                 vect.x = 0;
                 vect.y = 0;
                 vect.z = 0;
@@ -1730,87 +1617,36 @@
                 var speed = i/200;
 
                 tl.to(vect,speed,{ease:Linear.easeOut,x:tarX,y:tarY,z:tarZ},'fire');
-                
-                if(i==2)
-                {
-                    //TweenMax.to([vect,vectG],1,{x:'+='+Math.random()*2,y:'+='+Math.random()*2,z:'+='+Math.random()*2,repeat:-1,yoyo:true,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[[connectGeom,glowGeom]]});
-                    //TweenMax.to(vect,1,{x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-
-                }
-                else
-                {
-                    //TODO: Set speed to a value of signal pulse intensity, smaller the faster the pulses transmit, 1 second max one 
-                    //TweenMax.to([vect,vectG],.3,{ease:Bounce.easeInOut,delay:i/100,x:'+='+(Math.cos(counter)*dist*0.005),y:'+='+(Math.cos(counter)*dist*0.005),z:'+='+(Math.cos(counter)*dist*0.005),repeat:-1,yoyo:true});
-                }
-                //TweenMax.from(vect,.3,{ease:Bounce.easeInOut,delay:i/100,x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-                //var xPos = ((xDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-                //var yPos = ((yDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200);// + Math.random() *2 - 1;
-                //var zPos = ((zDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-
-                //vect.x = xPos;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.y = yPos;//((yDist/limit)*i) + Math.cos(i/4)*(dist/100) + Math.random() *2 - 1;//Math.cos(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.z = zPos;//((zDist/limit)*i) + Math.sin(i/4)*(dist/100) + Math.random() *2 - 1;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //connectGeom.vertices[i] = vect;
             }
-            //connectGeom.vertices[0] = originP;
-            //connectGeom.vertices[1] = originP;
-            
+
             connectGeom.vertices[limit-2] = connectionP;
             connectGeom.vertices[limit-1] = connectionP;
 
             limit = connectGeom.faces.length;
             var ribbonWeight = Math.floor(5+weight*5);
             var rndUV = _ribbonUvs[ribbonWeight];
-            //console.log(ribbonWeight)
-            //var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 var face = connectGeom.faces[i];
-                 //var val = Math.floor(Math.random()*55)+200;
-                // var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-                //var hex = '0x'+__rgbToHex(val,val,val);
-                
-               // var hex = 0xff0000;
-                //connectGeom.faces[ i ].color.setHex( hex );
-                //connectGeom.faceVertexUvs[0][i] = [ rndUV[0], rndUV[1], rndUV[2] ];
             }
 
-          
-          //connectGeom.vertices.push(connectionP);
-          //glowGeom = connectGeom.clone()
-          //var mat = local.generateParticleMaterial(10);
-          //var electrons = new THREE.PointCloud( connectGeom, mat );
-
-          var connection = new THREE.Mesh(connectGeom,connectMat);
-          connection.material.side = THREE.DoubleSide;
-         // var glow = new THREE.Mesh( glowGeom, _ribbonGlowMat.clone() );
-            //glow.material.side = THREE.DoubleSide;
-            //glow.scale.multiplyScalar(1.02);
-            //_glows.push(glow);
-            //_electrifiedGlows.push(glow);
-            //connection.add( glow );
-          //connection.add(electrons);
-          return connection;
+            var connection = new THREE.Mesh(connectGeom,connectMat);
+            connection.material.side = THREE.DoubleSide;
+            return connection;
         }
 
-
-
-        function __generateConnectionNerve(coreSize,v1,v2,motion)
-        {
+        function __generateConnectionNerve(coreSize,v1,v2,motion) {
             var dist = v1.distanceTo(v2);
             var weight = 0;
             var connectGeom = new THREE.PlaneGeometry(0.1*(Math.abs(weight)+1),dist/10,1,Math.ceil(dist/5));
-            //var connectGeom = new THREE.BoxGeometry(0.1*(Math.abs(weight)+1),dist/10,dist/10,1,Math.ceil(dist/5),1);
-            
+
             var glowGeom = connectGeom.clone();
             var connectMat = _ribbonMat.clone();//_ribbonConnectionMats[weight];
-            //console.log(connectMat);
+
             var originP = v1;
             var connectionP = v2; 
             var i=0;
             var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
-            //connectGeom.vertices[0] = originP;
-            //connectGeom.vertices[1] = originP;
+
             var vectorOffset = new THREE.Vector3(0,0,0);
             var counter = -1;
 
@@ -1824,75 +1660,29 @@
             var bezPath = [{x:0,y:0,z:0}];
 
             var xRnd = coreSize * 3;
-           // xRnd = (Math.random() > 0.5) ? -xRnd : xRnd;
 
             var tl = new TimelineMax({delay:1,/*repeat:-1,repeatDelay:.4,yoyo:true,*/onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
             tl.addLabel('fire');
-            //var yRnd = Math.random()*minDist+coreSize;
-            //var zRnd = Math.random()*minDist+coreSize;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 //todo increment by 2 to keep nodes next to each other 
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];//new THREE.Vector3();
-                
 
-                    //todo: Refactor this.
-                //vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-            
-                //vect.x = ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.y = ((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.cos((counter/4)-Math.PI/2);//*(dist/200);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.z = ((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                
                 vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-                
-                //vect.x = v1.x + Math.sin(counter) + ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;//(Math.abs(weight*14))+ (vectorOffset.x) *2;// *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                //vect.y = v1.y + Math.cos(counter) + ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;//(Math.abs(weight*14))+ (vectorOffset.y) *2;// *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                //vect.z = v1.z + Math.sin(counter) + ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;//(Math.abs(weight*14))+ (vectorOffset.z) *2;// *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-           
 
-                var tarX = v1.x +/*Math.random() - 0.5 +*/ ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                var tarY = v1.y +/*Math.random() - 0.5 +*/ ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                var tarZ = v1.z +/*Math.random() - 0.5 +*/ ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                
+                var tarX = v1.x +/*Math.random() - 0.5 +*/ ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+                var tarY = v1.y +/*Math.random() - 0.5 +*/ ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+                var tarZ = v1.z +/*Math.random() - 0.5 +*/ ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+
                 vect.x = 0;
                 vect.y = 0;
                 vect.z = 0;
 
-                if (i >= limit-2)
-                {
+                if (i >= limit-2) {
                     tarX = connectionP.x;
                     tarY = connectionP.y;
                     tarZ = connectionP.z;
                 }
-
-                /*var step = Math.abs(counter-0);
-                if (step == 0)
-                {
-                    step = 1;
-                }
-                if (counter < 14)
-                {
-                    if (maxDist == xDist || Math.random()>0.5)
-                    {
-                        vect.x += ((i%2)-.5)*(spread/(step)/spread)*coreSize;//minDist;
-                    }
-                    if (maxDist == yDist || Math.random()>0.5)
-                    {
-                        vect.y += ((i%2)-.5)*(spread/(step)/spread)*coreSize;//minDist;
-                    }
-                    if (maxDist == zDist || Math.random()>0.5)
-                    {
-                        vect.z += ((i%2)-.5)*(spread/(step)/spread)*coreSize;//minDist;
-                    }
-                }
-                else
-                {
-                    vect.x += ((i%2)-.5)*(spread/(step)/spread)*dist;//minDist;
-                    vect.y += ((i%2)-.5)*(spread/(step)/spread)*dist;//minDist;
-                    vect.z += ((i%2)-.5)*(spread/(step)/spread)*dist;//minDist;
-                }*/
-            
 
                 if (counter %10 == 0) bezPath = bezPath.concat([{x:tarX+20*(Math.random()-0.5), y:tarY+20*(Math.random()-0.5), z:tarZ+20*(Math.random()-0.5)}]);
                 var outputPath = bezPath.concat([{x:tarX, y:tarY, z:tarZ}])
@@ -1903,79 +1693,24 @@
 
                 //SPARKY SIGNAL VERY INTENSIVE //tl.to(vect,speed,{ease:Linear.easeNone,x:tarX,y:tarY,z:tarZ, bezier:bezierObj},'fire');
                 tl.to(vect,speed,{ease:Quad.easeInOut,x:tarX,y:tarY,z:tarZ},'fire');
-                //tl.to(vect,speed,{ease:Linear.easeNone,x:v2.x,y:v2.y,z:v2.z},'finish');
-                
-                if(i==2)
-                {
-                    //TweenMax.to([vect,vectG],1,{x:'+='+Math.random()*2,y:'+='+Math.random()*2,z:'+='+Math.random()*2,repeat:-1,yoyo:true,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[[connectGeom,glowGeom]]});
-                    //TweenMax.to(vect,1,{x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-
-                }
-                else
-                {
-                    //TODO: Set speed to a value of signal pulse intensity, smaller the faster the pulses transmit, 1 second max one 
-                    //TweenMax.to([vect,vectG],.3,{ease:Bounce.easeInOut,delay:i/100,x:'+='+(Math.cos(counter)*dist*0.005),y:'+='+(Math.cos(counter)*dist*0.005),z:'+='+(Math.cos(counter)*dist*0.005),repeat:-1,yoyo:true});
-                }
-                //TweenMax.from(vect,.3,{ease:Bounce.easeInOut,delay:i/100,x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-                //var xPos = ((xDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-                //var yPos = ((yDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200);// + Math.random() *2 - 1;
-                //var zPos = ((zDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-
-                //vect.x = xPos;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.y = yPos;//((yDist/limit)*i) + Math.cos(i/4)*(dist/100) + Math.random() *2 - 1;//Math.cos(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.z = zPos;//((zDist/limit)*i) + Math.sin(i/4)*(dist/100) + Math.random() *2 - 1;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //connectGeom.vertices[i] = vect;
             }
-            //connectGeom.vertices[0] = originP;
-            //connectGeom.vertices[1] = originP;
-            
-            //connectGeom.vertices[limit-2] = connectionP;
-            //connectGeom.vertices[limit-1] = connectionP;
 
             limit = connectGeom.faces.length;
             var ribbonWeight = Math.floor(5+weight*5);
             var rndUV = _ribbonUvs[ribbonWeight];
-            //console.log(ribbonWeight)
-            //var rndUV = _textureUvs[Math.floor(Math.random()*10)];
             for(i=0;i<limit;++i)
             {
                 var face = connectGeom.faces[i];
-                 //var val = Math.floor(Math.random()*55)+200;
-                // var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-                //var hex = '0x'+__rgbToHex(val,val,val);
-                
-               // var hex = 0xff0000;
-                //connectGeom.faces[ i ].color.setHex( hex );
-                //connectGeom.faceVertexUvs[0][i] = [ rndUV[0], rndUV[1], rndUV[2] ];
             }
-            //connectGeom.vertices[limit-2] = connectionP;
-            //connectGeom.vertices[limit-1] = connectionP;
-          
-          //connectGeom.vertices.push(connectionP);
-          //glowGeom = connectGeom.clone()
-          //var mat = local.generateParticleMaterial(10);
-          //var electrons = new THREE.PointCloud( connectGeom, mat );
 
-          var connection = new THREE.Mesh(connectGeom,connectMat);
-          _connectionsArray.push(connection);
-          /*connection.flipSided = false
-          connection.doubleSided = true;*/
-          //connection.material.side = THREE.DoubleSide;
-         // var glow = new THREE.Mesh( glowGeom, _ribbonGlowMat.clone() );
-            //glow.material.side = THREE.DoubleSide;
-            //glow.scale.multiplyScalar(1.02);
-            //_glows.push(glow);
-            //_electrifiedGlows.push(glow);
-            //connection.add( glow );
-          //connection.add(electrons);
-          return connection;
+            var connection = new THREE.Mesh(connectGeom,connectMat);
+            _connectionsArray.push(connection);
+
+            return connection;
         }
 
 
-        function __updateConnectionNerve(connection,coreSize,v1,v2)
-        {
-
-            
+        function __updateConnectionNerve(connection,coreSize,v1,v2) {
             var dist = v1.distanceTo(v2);
             var connectGeom = connection.getVisualConnection().geometry; 
             connectGeom.verticesNeedUpdate = true;
@@ -1998,33 +1733,27 @@
             var zSpacing = zDist / (limit>>1);
 
             var xRnd = coreSize * 3;
-            
+
             var counter = -1;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 // increment by 2 to keep nodes next to each other 
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];
-                
-                vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-                
 
-                var tarX = v1.x +/*Math.random() - 0.5 +*/ (xSpacing*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                var tarY = v1.y +/*Math.random() - 0.5 +*/ (ySpacing*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                var tarZ = v1.z +/*Math.random() - 0.5 +*/ (zSpacing*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                
+                vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
+
+                var tarX = v1.x +/*Math.random() - 0.5 +*/ (xSpacing*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+                var tarY = v1.y +/*Math.random() - 0.5 +*/ (ySpacing*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+                var tarZ = v1.z +/*Math.random() - 0.5 +*/ (zSpacing*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+
                 vect.x = tarX;
                 vect.y = tarY;
                 vect.z = tarZ;
-
-          }
+            }
         }
 
 
-        function __vibrateConnectionNerve(connection)
-        {
-
-            
+        function __vibrateConnectionNerve(connection) {
             var connectGeom = connection.getVisualConnection().geometry; 
             connectGeom.verticesNeedUpdate = true;
 
@@ -2034,26 +1763,27 @@
             var spread = limit;
 
             var counter = -1;
-            for (i=0;i<limit;++i)
-            {
-                // increment by 2 to keep nodes next to each other 
+            for (i=0;i<limit;++i) {
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];
-                
                 vectorOffset = (new THREE.Vector3((Math.cos(counter/spread*Math.PI*2)*10),(Math.sin(counter/spread*Math.PI*2)*10),(Math.cos(counter/spread*Math.PI*2)*10)));
-                TweenMax.to(vect,0.5,{x:'+='+vectorOffset.x,y:'+='+vectorOffset.y,z:'+='+vectorOffset.z, repeat:1, yoyo:true, onUpdate:__onFlagGeometryForUpdate, onUpdateParams:[connectGeom]})
-          }
+                TweenMax.to(vect, 0.5, {
+                    x : '+='+vectorOffset.x,
+                    y : '+='+vectorOffset.y,
+                    z : '+='+vectorOffset.z,
+                    repeat : 1,
+                    yoyo : true,
+                    onUpdate : __onFlagGeometryForUpdate,
+                    onUpdateParams : [connectGeom]
+                });
+            }
         }
 
-
-
-        function __generateConnectionRibbon(weight,v1,v2,motion)
-        {
+        function __generateConnectionRibbon(weight,v1,v2,motion) {
             var dist = v1.distanceTo(v2);
-            var connectGeom = connection.getVisualConnection().geometry;//new THREE.PlaneGeometry(0.1*(Math.abs(weight)+1),dist/10,1,90);
+            var connectGeom = connection.getVisualConnection().geometry;
             var glowGeom = connectGeom.clone();
-            var connectMat = _ribbonMat.clone();//_ribbonConnectionMats[weight];
-            //console.log(connectMat);
+            var connectMat = _ribbonMat.clone();
             var originP = v1;
             var connectionP = v2; 
             var i=0;
@@ -2067,94 +1797,37 @@
             var xDist = (v2.x - v1.x);
             var yDist = (v2.y - v1.y);
             var zDist = (v2.z - v1.z);
-            for (i=1;i<limit;++i)
-            {
+            for (i=1;i<limit;++i) {
                 //todo increment by 2 to keep nodes next to each other 
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];//new THREE.Vector3();
-                
 
-                    //todo: Refactor this.
-                //vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-            
-                //vect.x = ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.y = ((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.cos((counter/4)-Math.PI/2);//*(dist/200);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.z = ((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*1)) + (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-i)))/2;// + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                
                 vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-            
-            vect.x = Math.random() - 0.5 + ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-            vect.y = Math.random() - 0.5 +((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-            vect.z = Math.random() - 0.5 +((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-           
-                
-                if(i==2)
-                {
-                    //TweenMax.to([vect,vectG],1,{x:'+='+Math.random()*2,y:'+='+Math.random()*2,z:'+='+Math.random()*2,repeat:-1,yoyo:true,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[[connectGeom,glowGeom]]});
-                    //TweenMax.to(vect,1,{x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
+                vect.x = Math.random() - 0.5 + ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;
+                vect.y = Math.random() - 0.5 +((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;
+                vect.z = Math.random() - 0.5 +((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;
 
-                }
-                else
-                {
-                    //TODO: Set speed to a value of signal pulse intensity, smaller the faster the pulses transmit, 1 second max one 
-                    //TweenMax.to([vect,vectG],.3,{ease:Bounce.easeInOut,delay:i/100,x:'+='+(Math.cos(counter)*dist*0.005),y:'+='+(Math.cos(counter)*dist*0.005),z:'+='+(Math.cos(counter)*dist*0.005),repeat:-1,yoyo:true});
-                }
                 TweenMax.from(vect,.3,{ease:Bounce.easeInOut,delay:i/100,x:0,y:0,z:0,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-                //var xPos = ((xDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-                //var yPos = ((yDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200);// + Math.random() *2 - 1;
-                //var zPos = ((zDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
 
-                //vect.x = xPos;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.y = yPos;//((yDist/limit)*i) + Math.cos(i/4)*(dist/100) + Math.random() *2 - 1;//Math.cos(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.z = zPos;//((zDist/limit)*i) + Math.sin(i/4)*(dist/100) + Math.random() *2 - 1;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //connectGeom.vertices[i] = vect;
             }
             connectGeom.vertices[0] = originP;
-            //connectGeom.vertices[1] = originP;
-            
-            //connectGeom.vertices[limit-2] = connectionP;
             connectGeom.vertices[limit-1] = connectionP;
 
             limit = connectGeom.faces.length;
             var ribbonWeight = Math.floor(5+weight*5);
             var rndUV = _ribbonUvs[ribbonWeight];
-            //console.log(ribbonWeight)
-            //var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 var face = connectGeom.faces[i];
-                 //var val = Math.floor(Math.random()*55)+200;
-                // var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-                //var hex = '0x'+__rgbToHex(val,val,val);
-                
-               // var hex = 0xff0000;
-                //connectGeom.faces[ i ].color.setHex( hex );
                 connectGeom.faceVertexUvs[0][i] = [ rndUV[0], rndUV[1], rndUV[2] ];
             }
 
-          
-          //connectGeom.vertices.push(connectionP);
-          //glowGeom = connectGeom.clone()
-          //var mat = local.generateParticleMaterial(10);
-          //var electrons = new THREE.PointCloud( connectGeom, mat );
-
-          var connection = new THREE.Mesh(connectGeom,connectMat);
-          connection.material.side = THREE.DoubleSide;
-         // var glow = new THREE.Mesh( glowGeom, _ribbonGlowMat.clone() );
-            //glow.material.side = THREE.DoubleSide;
-            //glow.scale.multiplyScalar(1.02);
-            //_glows.push(glow);
-            //_electrifiedGlows.push(glow);
-            //connection.add( glow );
-          //connection.add(electrons);
-          return connection;
+            var connection = new THREE.Mesh(connectGeom,connectMat);
+            connection.material.side = THREE.DoubleSide;
+            return connection;
         }
 
-        function __updateConnectionRibbon(connection,v1,v2)
-        {
+        function __updateConnectionRibbon(connection,v1,v2) {
             connectGeom = connection.getVisualConnection().geometry; 
-            //console.log('------------');
-            //console.log(connectGeom);
             connectGeom.vertices[0] = v1;
             connectGeom.vertices[1] = v1;
             var i=0;
@@ -2166,55 +1839,37 @@
                 var xDist = (v2.x - v1.x);
                 var yDist = (v2.y - v1.y);
                 var zDist = (v2.z - v1.z);
-            for (i=2;i<limit;++i)
-            {
+            for (i=2;i<limit;++i) {
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];//new THREE.Vector3();
                 var vectG = glowGeom.vertices[i];
-                
 
                 vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-            
-            vect.x = Math.random() - 0.5 + ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-            vect.y = Math.random() - 0.5 +((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-            vect.z = Math.random() - 0.5 +((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-           
-                
-                //vect.x = ((xDist/limit*2)*counter) + ((i%2)-.5)*4 + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.y = ((yDist/limit*2)*counter) + ((i%2)-.5)*4 + Math.cos((counter/4)-Math.PI/2);//*(dist/200);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.z = ((zDist/limit*2)*counter) + ((i%2)-.5)*4 + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                
+                vect.x = Math.random() - 0.5 + ((xDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;
+                vect.y = Math.random() - 0.5 +((yDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;
+                vect.z = Math.random() - 0.5 +((zDist/spread)*counter) + ((i%2)-.5)*(Math.abs(weight*4))+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/2;
+
                 connectGeom.vertices[i] = vect;
-                if(i==limit-1)
-                {
+                if(i==limit-1) {
                     connectGeom.vertices[i] = v2;
                 }
             }
-
-
-
             connectGeom.vertices[limit-2] = connectionP;
             connectGeom.vertices[limit-1] = connectionP;
-            
             connectGeom.verticesNeedUpdate = true;
-
-
 
             var dist = v1.distanceTo(v2);
             var connectGeom = new THREE.PlaneGeometry(0.1*(Math.abs(weight)+1),dist/20,1,90);
 
-
             var glowGeom = connectGeom.clone();
             var connectMat = _ribbonConnectionMats[weight];
-            //console.log(connectMat);
             var originP = v1;
             var connectionP = v2; 
             var i=0;
             var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
-            
+
             var counter = 0;
-            for (i=2;i<limit-1;++i)
-            {
+            for (i=2;i<limit-1;++i) {
                 // increment by 2 to keep nodes next to each other 
                 if (i%2==0) counter++;
                 var vect = connectGeom.vertices[i];
@@ -2223,22 +1878,10 @@
                 var xDist = (v2.x - v1.x);
                 var yDist = (v2.y - v1.y);
                 var zDist = (v2.z - v1.z);
-
-
-                //vectG.x = vect.x = ((xDist/limit*2)*counter) + ((i%2)-.5)*4;// + Math.sin((counter/4)-Math.PI/2)*(dist/20);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vectG.y = vect.y = ((yDist/limit*2)*counter) + ((i%2)-.5)*4;// + Math.cos((counter/4)-Math.PI/2)*(dist/20);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vectG.z = vect.z = ((zDist/limit*2)*counter) + ((i%2)-.5)*4;// + Math.sin((counter/4)-Math.PI/2)*(dist/20);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                
-                //vect.x = ((xDist/limit*2)*counter) + ((i%2)-.5)*4 + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.y = ((yDist/limit*2)*counter) + ((i%2)-.5)*4 + Math.cos((counter/4)-Math.PI/2);//*(dist/200);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                //vect.z = ((zDist/limit*2)*counter) + ((i%2)-.5)*4 + Math.sin((counter/4)-Math.PI/2);//*(dist/200);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                
           }
-
         }
 
-        function __generateConnectionLightning(weight,v1,v2,motion,signalStrength)
-        {
+        function __generateConnectionLightning(weight,v1,v2,motion,signalStrength) {
             var dist = v1.distanceTo(v2);
             var connectGeom = new THREE.PlaneGeometry(dist/20,dist/20,1,90);
             var glowGeom = connectGeom.clone();
@@ -2257,25 +1900,12 @@
             var xDist = (v2.x - v1.x);
             var yDist = (v2.y - v1.y);
             var zDist = (v2.z - v1.z);
-            for (i=2;i<limit-1;++i)
-            {
+            for (i=2;i<limit-1;++i) {
                 //todo increment by 2 to keep nodes next to each other 
                 if (i%2!=0) counter++;
                 var vect = connectGeom.vertices[i];//new THREE.Vector3();
                 var vectG = glowGeom.vertices[i];
-                
 
-                    //todo: Refactor this.
-
-/*
-                     vect.x = destX;//((xDist/limit)*i);// + Math.sin((counter/4)-Math.PI/2)*(dist/20);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vect.y = destY;//((yDist/limit)*i);// + Math.cos((counter/4)-Math.PI/2)*(dist/20);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vect.z = destZ;//((zDist/limit)*i);// + Math.sin((counter/4)-Math.PI/2)*(dist/20);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-
-                var xVariation = 0;//Math.sin((counter/4)-Math.PI/2)*(dist/1000)// + (Math.sin(counter)*dist*0.0005);
-                var yVariation = 0;//Math.sin((counter/4)-Math.PI/2)*(dist/1000)// + (Math.sin(counter)*dist*0.0005);
-                var zVariation = 0;//Math.sin((counter/4)-Math.PI/2)*(dist/1000)// + (Math.sin(counter)*dist*0.0005);
-*/
                 var conXPos = ((xDist/limit*2)*counter) + Math.sin(counter/4)*dist*0.0025 + (2 * i%2);//(dist/200) ;//+ Math.random() *2 - 1;
                 var conYPos = ((yDist/limit*2)*counter) + Math.sin(counter/4)*dist*0.0025 + (2 * i%2);//(dist/200);// + Math.random() *2 - 1;
                 var conZPos = ((zDist/limit*2)*counter) + Math.sin(counter/4)*dist*0.0025 + (2 * i%2);
@@ -2283,25 +1913,20 @@
                 var glowXPos = ((xDist/limit*2)*counter) + Math.sin(counter/4)*dist*0.0025 + (2 * i%2);//(dist/200) ;//+ Math.random() *2 - 1;
                 var glowYPos = ((yDist/limit*2)*counter) + Math.sin(counter/4)*dist*0.0025 + (2 * i%2);//(dist/200);// + Math.random() *2 - 1;
                 var glowZPos = ((zDist/limit*2)*counter) + Math.sin(counter/4)*dist*0.0025 + (2 * i%2);
-/*
 
-                
-                vectG.x = destX + xVariation// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vectG.y = destX + yVariation;//Math.cos((counter/4)-Math.PI/2)*(dist/100) + (Math.cos(counter)*dist*0.005);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vectG.z = destX + zVariation;//Math.sin((counter/4)-Math.PI/2)*(dist/100) + (Math.cos(counter)*dist*0.005);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-*/              var initTheta = Math.sin(counter/4)*2*Math.PI + Math.random()*2-1;
+                var initTheta = Math.sin(counter/4)*2*Math.PI + Math.random()*2-1;
                 var initPhi = Math.sin(counter/4)*Math.PI + Math.random()*2-1;
 
                 var xVariation =  2*Math.sin(initTheta)*Math.cos(initPhi);//  
                 var yVariation =  2*Math.sin(initTheta)*Math.sin(initPhi);// 
                 var zVariation =  2*Math.cos(initTheta); 
 
-                vect.x = conXPos;//((xDist/limit)*i);// + Math.sin(counter/10)*(dist*0.05);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vect.y = conYPos;//((yDist/limit)*i);// + Math.cos(counter/10)*(dist*0.05);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vect.z = conZPos;//((zDist/limit)*i);// + Math.sin(counter/10)*(dist*0.05);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vectG.x = glowXPos;//((xDist/limit)*i);// + Math.sin(counter/10)*(dist*0.05);// + ((i%2) - 1)*0.4;// + (Math.sin(counter/4)*dist*0.005);// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vectG.y = glowYPos;//((yDist/limit)*i);// + Math.cos(counter/10)*(dist*0.05);// + ((i%2) - 1)*0.4;// + (Math.sin(counter/4)*dist*0.005);// + Math.cos(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
-                vectG.z = glowZPos;//((zDist/limit)*i);// + Math.sin(counter/10)*(dist*0.05) ;//+ ((i%2) - 1)*0.4;// + Math.sin(i/100)*((spread>>1)-(Math.abs((spread>>1)-(counter/4))))/2;
+                vect.x = conXPos;
+                vect.y = conYPos;
+                vect.z = conZPos;
+                vectG.x = glowXPos;
+                vectG.y = glowYPos;
+                vectG.z = glowZPos;
 
                 var initTheta = Math.sin(counter/4)*2*Math.PI + (Math.random()*2-1) * 0.25;
                 var initPhi = Math.sin(counter/4)*Math.PI + (Math.random()*2-1) * 0.25;
@@ -2310,55 +1935,27 @@
                 var yVariation =  signalStrength*Math.sin(initTheta)*Math.sin(initPhi);// 
                 var zVariation =  signalStrength*Math.cos(initTheta); 
 
-                //var xVariation =  Math.sin((counter/40)-Math.PI/2)*(dist*0.01) + (Math.sin(counter/4)*dist*0.001);
-                //var yVariation = Math.cos((counter/40)-Math.PI/2)*(dist*0.01) + (Math.sin(counter/4)*dist*0.001);
-                //var zVariation = Math.sin((counter/40)-Math.PI/2)*(dist*0.01);
-
-
-                
-                if(i==2)
-                {
+                if(i==2) {
                     TweenMax.to(vectG,1,{x:'+='+Math.random()*2,y:'+='+Math.random()*2,z:'+='+Math.random()*2,repeat:-1,yoyo:true,onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[glowGeom]});
-
                 }
-                else
-                {
-                    //TweenMax.to([vect,vectG],.5,{ease:Elastic.easeInOut,delay:i/10,x:'+='+(Math.sin(counter)*dist*0.05),y:'+='+(Math.sin(counter)*dist*0.05),z:'+='+(Math.sin(counter)*dist*0.05),repeat:-1,yoyo:true});
+                else {
                     TweenMax.to([vect,vectG],.8,{ease:Elastic.easeInOut,delay:i/100,x:'+='+xVariation,y:'+='+yVariation,z:'+='+zVariation,repeat:-1,yoyo:true});
-                    //TweenMax.to([vect,vectG],1,{ease:Elastic.easeInOut,delay:i/100,x:'+='+(Math.sin(counter/40)*dist*0.005),y:'+='+(Math.cos(counter/40)*dist*0.005),z:'+='+(Math.cos(counter/40)*dist*0.005),repeat:-1,yoyo:true});
                 }
-                //var xPos = ((xDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-                //var yPos = ((yDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200);// + Math.random() *2 - 1;
-                //var zPos = ((zDist/limit)*i) + Math.sin(counter/4)*30;//(dist/200) ;//+ Math.random() *2 - 1;
-
-                //vect.x = xPos;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.y = yPos;//((yDist/limit)*i) + Math.cos(i/4)*(dist/100) + Math.random() *2 - 1;//Math.cos(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //vect.z = zPos;//((zDist/limit)*i) + Math.sin(i/4)*(dist/100) + Math.random() *2 - 1;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //connectGeom.vertices[i] = vect;
           }
           connectGeom.vertices[limit-2] = connectionP;
           connectGeom.vertices[limit-1] = connectionP;
           glowGeom.vertices[limit-2] = connectionP;
           glowGeom.vertices[limit-1] = connectionP;
-          //connectGeom.vertices.push(connectionP);
-          //glowGeom = connectGeom.clone()
-          //var mat = local.generateParticleMaterial(10);
-          //var electrons = new THREE.PointCloud( connectGeom, mat );
 
           var connection = new THREE.Mesh(connectGeom,connectMat);
           var glow = new THREE.Mesh( glowGeom, _ribbonGlowMat.clone() );
-            //glow.material.side = THREE.DoubleSide;
-            //glow.scale.multiplyScalar(1.02);
-            //_glows.push(glow);
             _electrifiedGlows.push(glow);
             connection.add( glow );
 
-          //connection.add(electrons);
           return connection;
         }
 
-        function __generateConnectionTube(color,additive,v1,v2)
-        {
+        function __generateConnectionTube(color,additive,v1,v2) {
             var dist = v1.distanceTo(v2);
             var points = [];
             for ( var i = 0; i < 3; i ++ ) {
@@ -2402,21 +1999,19 @@
             //local.particleGroupVelocity.push(groupVelocity);
             //local.particleTweens[systemID] = tweenArr;
             for ( i = 0; i < nodes; i ++ ) {
+                var vertex = new THREE.Vector3();
 
-            var vertex = new THREE.Vector3();  
-            
-            var theta = Math.random()*2*Math.PI;
-            var phi = Math.random()*Math.PI;
-            
-            var initX =  range*Math.cos(theta)*Math.cos(phi);//  
-            var initY =  range*Math.sin(theta)*Math.sin(phi);// 
-            var initZ =  range*Math.cos(theta); 
+                var theta = Math.random()*2*Math.PI;
+                var phi = Math.random()*Math.PI;
 
-            vertex.x = initX;
-            vertex.y = initY;
-            vertex.z = initZ;
-            geometry.vertices.push( vertex );
-        
+                var initX =  range*Math.cos(theta)*Math.cos(phi);
+                var initY =  range*Math.sin(theta)*Math.sin(phi);
+                var initZ =  range*Math.cos(theta); 
+
+                vertex.x = initX;
+                vertex.y = initY;
+                vertex.z = initZ;
+                geometry.vertices.push( vertex );
             }
             return geometry;
         }
@@ -2434,15 +2029,15 @@
           //local.particleTweens[systemID] = tweenArr;
           for ( i = 0; i < nodes; i ++ ) {
 
-            var vertex = new THREE.Vector3();  
-            
+            var vertex = new THREE.Vector3();
+
             var initTheta = Math.random()*2*Math.PI;
             var initPhi = Math.random()*Math.PI;
             var theta = initTheta;
             var phi = initPhi;
 
             var varFactor = Math.random()*variation-(variation>>1);
-            
+
             var initX =  (varFactor+range)*Math.sin(initTheta)*Math.cos(initPhi);//  
             var initY =  (varFactor+range)*Math.sin(initTheta)*Math.sin(initPhi);// 
             var initZ =  (varFactor+range)*Math.cos(initTheta); 
@@ -2451,75 +2046,47 @@
             vertex.y = initY;
             vertex.z = initZ;
             geometry.vertices.push( vertex );
-            
-            }
+          }
           return geometry;
         }
 
 
-        function __generateSphereGeometry(radius,complexity,variation)
-        {
-          //var geometry = new THREE.SphereGeometry( radius, complexity, complexity );
+        function __generateSphereGeometry(radius,complexity,variation) {
           console.log(complexity)
           var geometry = new THREE.OctahedronGeometry(radius,complexity);
-          //console.log(geometry);
-          if (variation > 0)
-            {
-              /*for(var i=0; i < geometry.faces.length; ++i){
-                var hex = _colorManager.getNetworkMeshColor();//0x232334;//0x040421;////Math.sin(i/100000000) * 0xffffff;
-               // var hex = 0xff0000;
-               // geometry.faces[ i ].color.setHex( hex );
-               // geometry.faces[ i + 1 ].color.setHex( hex );
-                //console.log(geometry.faces[ i ].a+'  '+geometry.faces[ i ].b+'  '+geometry.faces[ i ].c);
-              }*/
-              for (var i=0; i <geometry.vertices.length; ++i)
-              {
+          if (variation > 0) {
+              for (var i=0; i <geometry.vertices.length; ++i) {
                 var vert = geometry.vertices[i];
                 vert.x += Math.random()*variation-(variation>>1);
                 vert.y += Math.random()*variation-(variation>>1);
                 vert.z += Math.random()*variation-(variation>>1);
 
                 var mRange = variation*0.5;
-                if(i == 0)
-                {
-                    //TweenMax.to(vert,144,{x:vert.x+Math.random()*mRange-(mRange>>1),y:vert.y+Math.random()*mRange-(mRange>>1),z:vert.z+Math.random()*mRange-(mRange>>1),yoyo:true,repeat:-1,onUpdate:__onSphereGeometryUpdate,onUpdateParams:[geometry], ease:Linear.easeNone});
-                }
-                else
-                {
-                    //TweenMax.to(vert,Math.random()*40+100,{x:vert.x+Math.random()*mRange-(mRange>>1),y:vert.y+Math.random()*mRange-(mRange>>1),z:vert.z+Math.random()*mRange-(mRange>>1),yoyo:true,repeat:-1, ease:Linear.easeNone});
-                }
               }
-            }
+          }
           return geometry;
         }
 
-        function __onSphereGeometryUpdate(geom)
-        {
+        function __onSphereGeometryUpdate(geom) {
             geom.verticesNeedUpdate = true;
         }
 
-        function __generateNodeGlowGeometry(radius, complexity,type)
-        {
+        function __generateNodeGlowGeometry(radius, complexity,type) {
             var geometry = new THREE.IcosahedronGeometry(radius,complexity);
             return geometry;
         }
 
-        function __generateMetaVerse(radius,complexity,wireframe,variation)
-        {
+        function __generateMetaVerse(radius,complexity,wireframe,variation) {
             var metaVerse = __generateSphereSystem(radius,complexity,wireframe,variation);
             return metaVerse;
         }
 
-        function __generateSky()
-        {
+        function __generateSky() {
             var mat = new THREE.MeshBasicMaterial( { 
-                color: _colorManager.getBackgroundSceneColor(), 
-                fog:false , side:THREE.BackSide//, 
-                //ambient: _colorManager.getBackgroundSceneAmbientColor(),
-                //specular:_colorManager.getBackgroundSceneSpecularColor(),
-                //shininess: _colorManager.getBackgroundSceneShininess()
-                } );//new THREE.MeshBasicMaterial({color:'#eeeeee',face:THREE.BackSide,fog:false});
-            var geom = __generateSphereGeometry(15000,1,0);;//local.generateParticleGeometry(10000,1000);//
+                    color: _colorManager.getBackgroundSceneColor(),
+                    fog:false , side:THREE.BackSide
+                } );
+            var geom = __generateSphereGeometry(15000,1,0);
             var sphere = new THREE.Mesh(geom, mat);
             return sphere;
         }
@@ -2527,15 +2094,14 @@
         function __generateSphereSystem(radius,complexity,wireframe,variation)
         {
             var mat = __generateSphereMaterial(wireframe,variation,true);
-            var geom = __generateSphereGeometry(radius*4,4,variation*4);//local.generateParticleGeometry(10000,1000);//
+            var geom = __generateSphereGeometry(radius*4,4,variation*4);
 
             var sphere = new THREE.Mesh(geom, mat);
             _scene.add(sphere);
 
             var i=0;
             var limit = 9;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 if (i<2)
                 {
                     var pGeom = __generateSphereGeometry(radius*2,complexity,variation*2);
@@ -2573,7 +2139,6 @@
                 parts.sortParticles = true;
                 sphere.add(parts);
             }
-
             return sphere;
         }
 
@@ -2608,8 +2173,6 @@
                 //side:THREE.FrontSide,
                 wireframe:false
             });
-
-            //var connection = __linkNodes(0.5,false,container,attribute)
 
             var rnd = 1;//Math.floor(Math.random()*2);
             var tier = attrData.getTier();
@@ -2664,8 +2227,7 @@
         //  Node Creation
         ////////////////////////
 
-        function __generateNode(range,nodeData,x,y,z)
-        {
+        function __generateNode(range,nodeData,x,y,z) {
             var node;
             var container = _scene;
 
@@ -2683,14 +2245,12 @@
 
             node.innerCore = innerCore;
             node.coreSize = coreSize;
-            if (x !== undefined)
-            {
+            if (x !== undefined) {
                 var initX = x;
                 var initY = y;
                 var initZ = z;
             }
-            else
-            {
+            else {
                 theta = Math.random()*2*Math.PI;
                 phi = Math.random()*Math.PI;
                 var range = Math.random()*node.coreRange + 700;
@@ -2713,8 +2273,7 @@
         /**
          * __
          */
-        function __activateNodeModel(nodeData)
-        {
+        function __activateNodeModel(nodeData) {
             var node = nodeData.getVisualNode();
 
             if (!node.glow)
@@ -2764,15 +2323,14 @@
         //////////////////////////////
         ///   Animation and rendering functions
 
-        function __animate()// = function()
-        {
+        function __animate() {
           requestAnimationFrame( __animate );
           __update();
-        };
+        }
 
 
         /**
-        * Init the depth of field post processing scene
+        * __initPostProcessing initializes the depth of field post processing scene
         */
         function __initPostProcessing() {
 
@@ -2798,8 +2356,6 @@
                 dithering   : 0.00001
             };
             _postProcessing = {};
-
-
 
             _postProcessing.scene  = new THREE.Scene();
             _postProcessing.camera = new THREE.OrthographicCamera( -window.innerWidth / 2, window.innerWidth / 2, window.innerHeight / 2, -window.innerHeight / 2, -60, 60 );
@@ -2838,8 +2394,7 @@
             _postProcessing.scene.add( _postProcessing.quad );
         }
 
-        function __update()
-        {
+        function __update() {
             //_scene.updateMatrixWorld();
             //_particleShaderMaterialuniforms.time.value += delta * 10;
             __checkForIntersections('passive')
@@ -2858,8 +2413,7 @@
 
             var i=0;
             var limit = _labelsArray.length;
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 var label = _labelsArray[i];
                 label.updateMatrixWorld();
                 label.parent.updateMatrixWorld();
@@ -2867,13 +2421,10 @@
                 label.lookAt(localCamVector);
             }
 
-
-
             var i=0;
             var limit=_glows.length;
             _camera.updateMatrixWorld();
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 // localtoworld coordinate issue.  nested objects are basing their location off of the root.
                 var nodeGlow = _glows[i]; 
                 nodeGlow.updateMatrixWorld();
@@ -2884,8 +2435,7 @@
                 // _glows[i].material.uniforms.viewVector.value = new THREE.Vector3().subVectors( cameraLocalVect, _glows[i].position );
             }
             limit = _electrifiedGlows.length;
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 // localtoworld coordinate issue.  nested objects are basing their location off of the root.
                 var electricGlow = _electrifiedGlows[i]; 
                 var rndVector = new THREE.Vector3(Math.random()*_metaVerseRange*2-_metaVerseRange,Math.random()*_metaVerseRange*2-_metaVerseRange,Math.random()*_metaVerseRange*2-_metaVerseRange);
@@ -2895,8 +2445,7 @@
 
             // Patch to fix issue where connection geometries disappear if the mesh's initial position is behind the camera.
             //TODO: Update to only check connections that are incoming connections to activeNode;
-            if (_cameraZoom < 500)
-            {
+            if (_cameraZoom < 500) {
                 var i=0;
                 var limit = _connectionsArray.length;
                 for (i=0;i<limit;++i)
@@ -2913,18 +2462,15 @@
                     geom.computeBoundingSphere();
                 }
             }
-            if (Math.abs(_camera.position.z) > 10000)
-            {
+            if (Math.abs(_camera.position.z) > 10000) {
                 var i=0;
                 var limit = _connectionsArray.length;
-                for (i=0;i<limit;++i)
-                {
+                for (i=0;i<limit;++i) {
                     var connection = _connectionsArray[i];
                     connection.visible = false;
                 }
             }
-            else
-            {
+            else {
                 var i=0;
                 var limit = _connectionsArray.length;
                 for (i=0;i<limit;++i)
@@ -2938,8 +2484,7 @@
         }
 
 
-        function __render()
-        {
+        function __render() {
             var time = Date.now() * 0.00005;
 
             _particleShaderMaterial.uniforms.texture.value = _particleShaderMaterial.uniforms.texture_point.value
@@ -2951,8 +2496,6 @@
             //_renderer.clear();
             _renderer.render( _scene, _camera );
         };
-
-
 
         return {
             INITIALIZE : INITIALIZE,
