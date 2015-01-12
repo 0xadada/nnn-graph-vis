@@ -2733,7 +2733,7 @@
 
                 glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), material );
                 glow.material.side = THREE.FrontSide;
-                glow.scale.multiplyScalar(0.85);
+                glow.scale.multiplyScalar(1.125);
 
                 // ToDo: Position the x, y z of the label
                 // create the label text

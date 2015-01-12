@@ -54,7 +54,6 @@
                 }
                 // else toggle playback
                 else {
-                    $scope.isPaused = !$scope.isPaused;
                     // if paused, play
                     if ( $scope.isPaused === true ) {
                         console.debug( 'Resumed' );
@@ -65,6 +64,8 @@
                         console.debug( 'Paused' );
                         TweenMax.pauseAll();
                     }
+                    // toggle internal playback state
+                    $scope.isPaused = !$scope.isPaused;
                 }
             }
         }
