@@ -16,16 +16,29 @@
         $scope.createVisualizer();
     }
 
+    $scope.createNodeDataManager = function() {
+        $scope.nodeDataManager = new NodeDataManager($scope);
+        $scope.$on(NodeDataManager.DATA_PARSED, $scope.onDataParsed);
+    }
+
+    $scope.createColorManager = function() {
+        $scope.colorManager = new ColorManager($scope);
+    }
+
+    $scope.createVisualizer = function() {
+        $scope.$on(Visualizer.NODE_TARGETTED,$scope.onNodeTargetted);
+        $scope.$on(Visualizer.ATTRIBUTE_SELECTED,$scope.onAttributeSelected);
+        $scope.$on(Visualizer.ATTRIBUTE_ROLL_OVER,$scope.onAttributeRollOver);
+        Visualizer.init($scope,$scope.nodeDataManager,$scope.colorManager);
+    }
+
     $scope.demoMode = function() {
         //$('.start_button').hide();
-        TweenMax.to('.start_button',.5,{autoAlpha:0})
+        TweenMax.to('.start_button', 0.5, { autoAlpha : 0 })
         $scope.getGraphData();
     }
 
     $scope.demoAnimation = function() {
-        //$scope.setActiveNode(1553718);
-        //TweenMax.delayedCall(0,$scope.setActiveNode,[1553718,1,1,1]);
-        //TweenMax.delayedCall(2,$scope.isolateNode,[1553718]);
         TweenMax.delayedCall(1,$scope.locateNode,[1553718,8,true]);
         TweenMax.delayedCall(5,Visualizer.setFogLevel,[0.001,3]);
         TweenMax.delayedCall(8,Visualizer.spinCamera,[10]);
@@ -80,59 +93,31 @@
         $scope.$apply();
     }
 
-    $scope.createColorManager = function()
-    {
-        $scope.colorManager = new ColorManager($scope);
-    }
-
-    $scope.createNodeDataManager = function()
-    {
-        $scope.nodeDataManager = new NodeDataManager($scope);
-        $scope.$on(NodeDataManager.DATA_PARSED, $scope.onDataParsed);
-    }
-
-    $scope.createVisualizer = function() {
-        //$scope.visualizer = new Visualizer()
-        $scope.$on(Visualizer.INITIALIZE,$scope.onVisInit);
-        $scope.$on(Visualizer.NODE_TARGETTED,$scope.onNodeTargetted);
-        $scope.$on(Visualizer.ATTRIBUTE_SELECTED,$scope.onAttributeSelected);
-        $scope.$on(Visualizer.ATTRIBUTE_ROLL_OVER,$scope.onAttributeRollOver);
-        Visualizer.init($scope,$scope.nodeDataManager,$scope.colorManager);
-    }
-
-    $scope.createNode = function(nodeData,x,y,z) {
-        // create new node object
-
-        // check if it is in the node data pool already
-
+    /**
+     * createNode an alias for the Visualizer node create.
+     *
+     * @param NodeData Object nodeData data about the node.
+     */
+    $scope.createNode = function(nodeData, x, y, z) {
         // check if it is already created in the visualizer
-
-        if(nodeData.getVisualNode() === undefined)
-        {
+        if(nodeData.getVisualNode() === undefined) {
             // create new visualizer node
             Visualizer.createNode(nodeData,x,y,z);
         }
-        //Visualizer.targetNode(nodeData,1,false,2);
-        //TweenMax.delayedCall(2,Visualizer.activateNode,[nodeData])
-        // locate and activate
     }
 
-    $scope.highlightConnection = function(connection)
-    {
-        //console.log(connection.getVisualConnection());
+    $scope.highlightConnection = function(connection) {
         if (connection.getVisualConnection() !== undefined)
         {
             Visualizer.highlightConnection(connection);
         }
     }
 
-    $scope.branchNode = function(nodeID,levelsDeep,originID)
-    {
+    $scope.branchNode = function(nodeID, levelsDeep, originID) {
         if (levelsDeep <= 0) return;
         var i=0;
         var nodeData = $scope.getNodeDataByID(nodeID);
         if (nodeData === undefined) return;
-        //$scope.createNode(nodeData);
         var limit = nodeData.connections.length;
         //todo: add in branched node list to check against to prevent loop backs.
         for(i=0;i<limit;++i)
@@ -140,20 +125,15 @@
             var connection = nodeData.connections[i];
             if (nodeData)
             {
-                //console.log(connection.getConnectionNode());
-                //$scope.branchNode(connection.getConnectionNode(),--levelsDeep,nodeID);
                 var connectionNode = $scope.getNodeDataByID(connection.getConnectionNode());
                 if (connectionNode !== undefined) $scope.createNode(connectionNode)
                 if (connection.getConnectionNode() !== originID)
                 {
                     TweenMax.delayedCall(Math.random()*4+1,$scope.branchNode,[connection.getConnectionNode(),--levelsDeep,nodeID])
                 }
-
-                //$scope.displayConnection(connection)
             }
         }
         Visualizer.clusterNode(nodeData);
-        //Visualizer.connectNode(nodeData,true,true);
 
         TweenMax.delayedCall(1,Visualizer.connectNode,[nodeData,true,true]);
     }
@@ -165,7 +145,6 @@
 
     $scope.setActiveNode = function(id,x,y,z) {
         if (id===undefined) id = $scope.inputNodeID;
-        //console.log($scope.activeNode);
         var nodeData = $scope.nodeDataManager.getNodeByID(id);
         if (nodeData === undefined) return;
         if (nodeData.getVisualNode() === undefined) $scope.createNode(nodeData,x,y,z);
@@ -203,8 +182,7 @@
         $scope.inputZoom = value;
     }
 
-    $scope.getZoom = function()
-    {
+    $scope.getZoom = function() {
         return $scope.inputZoom;
     }
 
@@ -220,8 +198,7 @@
         Visualizer.isolateNode(node);
     }
 
-    $scope.displayConnection = function(connection)
-    {
+    $scope.displayConnection = function(connection) {
         var initNode = $scope.nodeDataManager.getNodeByID(connection.getInitialNode());
         var connectNode = $scope.nodeDataManager.getNodeByID(connection.getConnectionNode());
         if (!initNode.getVisualNode()) $scope.createNode(initNode);
@@ -229,9 +206,7 @@
         Visualizer.displayConnection(connection,true);
     }
 
-
-    $scope.displayNodeConnections = function(id)
-    {
+    $scope.displayNodeConnections = function(id) {
         if(id === undefined) id = $scope.inputNodeID;
         var node = $scope.nodeDataManager.getNodeByID(id);
         var connections = node.getConnections();
@@ -246,11 +221,9 @@
         Visualizer.connectNode(node,true);
     }
 
-
     $scope.getGraphData = function() {
         $scope.nodeDataManager.loadData();
         $scope.nodes = $scope.nodeDataManager.getNodeList();
-
     }
 
     $scope.clearData = function() {
@@ -274,36 +247,25 @@
         Visualizer.connectAllNodes($scope.nodeDataManager.getNodeList());
     }
 
-
-    $scope.sparkNode = function() { }
-
-   //  EVENT HANDLERS
-
-    $scope.onAttributeSelected = function(evt,attribute)
-    {
+    //  EVENT HANDLERS
+    $scope.onAttributeSelected = function(evt,attribute) {
         $scope.activeAttribute = attribute;
         $scope.$apply()
     }
 
-    $scope.onAttributeRollOver = function(evt,attribute)
-    {
+    $scope.onAttributeRollOver = function(evt,attribute) {
         $scope.activeAttribute = attribute;
         $scope.$apply()
     }
 
-    $scope.onDataParsed = function()
-    {
+    $scope.onDataParsed = function() {
         //todo: possible add call back from visualizer that staggers each call until listener is triggered from previous node geometry is generated and placed.
         console.log('data parsed');
         console.log($scope.nodes[0])
         $scope.demoAnimation();
-        //$scope.createNode($scope.nodes[0])
-        //Visualizer.createNodes($scope.nodes);
-        //$scope.killDataParseListener();
     }
 
-    $scope.onNodeTargetted = function(evt,nodeID)
-    {
+    $scope.onNodeTargetted = function(evt,nodeID) {
         //console.log($scope.nodeDataManager.getNodeByID(nodeID))
         $scope.activeNode = $scope.nodeDataManager.getNodeByID(nodeID);
         var i=0;
@@ -319,11 +281,6 @@
         }
         $scope.activeNodeConnections = activeConnections;//$scope.nodeDataManager.getNodeByID(nodeID).getConnections().concat();
         //console.log($scope.activeNodeConnections);
-    }
-
-    $scope.onVisInit = function()
-    {
-        console.log(Visualizer.INITIALIZE)
     }
 
     $scope.init();
