@@ -2381,55 +2381,16 @@
             var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
             connectGeom.vertices[0] = v2;
             connectGeom.vertices[3] = v2;
-            //connectGeom.vertices[6] = v2;
-            
-            //connectGeom.vertices[1] = v1;
-            //connectGeom.vertices[2] = v1;
+
             var counter = 0;
-            /*for (i=2;i<limit-1;++i)
-            {
-                //todo increment by 2 to keep nodes next to each other
-                if (i%3==0) counter++;
-                var vect = connectGeom.vertices[i];//new THREE.Vector3();
-
-                var xDist = (v2.x - v1.x);
-                var yDist = (v2.y - v1.y);
-                var zDist = (v2.z - v1.z);
-                var xPos = ((xDist/limit)*i) + Math.sin(counter/4)*10;//(dist/200) ;//+ Math.random() *2 - 1;
-                var yPos = ((yDist/limit)*i) + Math.sin(counter/4)*10;//(dist/200);// + Math.random() *2 - 1;
-                var zPos = ((zDist/limit)*i) + Math.sin(counter/4)*10;//(dist/200) ;//+ Math.random() *2 - 1;
-
-                vect.x = xPos;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                vect.y = yPos;//((yDist/limit)*i) + Math.cos(i/4)*(dist/100) + Math.random() *2 - 1;//Math.cos(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                vect.z = zPos;//((zDist/limit)*i) + Math.sin(i/4)*(dist/100) + Math.random() *2 - 1;//Math.sin(i/10)*((limit>>1)-(Math.abs((limit>>1)-i)))/2;
-                //connectGeom.vertices[i] = vect;
-          }*/
-          //connectGeom.vertices[limit-3] = v2;
-          //connectGeom.vertices[limit-2] = v2;
-          //connectGeom.vertices[limit-1] = v2;
-          //connectGeom.vertices.push(connectionP);
-
-          //var mat = local.generateParticleMaterial(10);
-          //var electrons = new THREE.PointCloud( connectGeom, mat );
 
           var connection = new THREE.Mesh(connectGeom,connectMat);
           //connection.add(electrons);
           return connection;
         }
 
-
-
-
-
-
-
-
-
-
-
         ///////////////
         // Geometry generation functions
-
 
         function __generateAttributeGeometry(nodes, range) {
             var geometry = new THREE.Geometry();
@@ -2777,9 +2738,9 @@
                 // ToDo: Position the x, y z of the label
                 // create the label text
                 // create the label postion
-                labelPositionX = node.position.x + 2;
-                labelPositionY = node.position.y + 1;
-                labelPositionZ = node.position.z;
+                labelPositionX = glow.position.x + 3;
+                labelPositionY = glow.position.y + 11;
+                labelPositionZ = Math.ceil( glow.position.z ) - glow.position.z;
                 labelText = ' ' + nodeData.name + ' ';
                 // draw the label
                 label = __createTextSprite( labelText, {
@@ -2790,8 +2751,6 @@
                     backgroundColor: {r:255, g:255, b:255, a:0.75}
                 } );
                 label.position.set(labelPositionX, labelPositionY, labelPositionZ);
-                // ToDo: (Maybe) add the label to the scene
-                // scene.add( spritey );
 
                 // Glow only
                 _glows.push(glow);

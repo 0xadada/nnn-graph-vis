@@ -29,6 +29,7 @@
         TweenMax.delayedCall(1,$scope.locateNode,[1553718,8,true]);
         TweenMax.delayedCall(5,Visualizer.setFogLevel,[0.001,3]);
         TweenMax.delayedCall(8,Visualizer.spinCamera,[10]);
+
         TweenMax.delayedCall(10,$scope.demoLocateNodeConnection);
         TweenMax.delayedCall(20,$scope.demoLocateNodeConnection);
         TweenMax.delayedCall(30,$scope.locateNode,[1553718,4,false]);
