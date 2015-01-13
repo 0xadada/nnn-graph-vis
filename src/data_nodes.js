@@ -36,36 +36,13 @@
         NodeDataManager.prototype.parseNodeData = function() {
             var i=0;
             var limit = this.dataObj.length;
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 var node = new NodeData(this.dataObj[i]);
                 this.nodesList.push(node);
                 this.nodesHash[node.id] = node;
             }
-            /*for (i=0;i<limit;++i)
-            {
-                var node = this.nodesList[i];
-                var nConnections = node.getConnections();
-                var c=0;
-                var cLimit = nConnections.length;
-                for(c=0;c<cLimit;++c)
-                {
-                    var cData = nConnections[c]
 
-                    if (cData !== undefined)
-                    {
-                        var cNode = this.nodesHash[cData.getConnectionNode()];
-                        if (cNode !== undefined)
-                        {
-                            cNode.addIncomingConnection(cData.getInitialNode(),cData.getWeight());
-                        }
-                    }
-                    
-                }
-            }*/
-
-            for (i=0;i<limit;++i)
-            {
+            for (i=0;i<limit;++i) {
                 //todo: connect and define connections.
                 var node = this.nodesList[i];
                 for (c=0;c<node.totalConnections;++c)
@@ -73,44 +50,11 @@
                     var connectData = node.connections[c];
                     //console.log(connectData);// +'  '+this.nodesHash[connectData.connectionNode].attributes);
                     var connectNode = this.nodesHash[connectData.connectionNode];
-                    if (connectNode !== undefined) 
-                    {
+                    if (connectNode !== undefined) {
                         var aLimit = connectNode.attributes.length;
-                        for (a=0;a<aLimit;++a)
-                        {
-                        //  console.log(connectNode.attributes[a])
-                        }
                     }
-                    //console.log(node.attributes);
-                    //for (a=0;a<connectNode.attributes.length;++a)
-                    //{
-                        //console.log(node.attributes[a])
-                    //}
-                    //console.log('------------');
                 }
-                //console.log()
             }
-
-            /*for (i=0;i<100;++i)
-            {
-                var fakeData = {
-                    id: limit+i, 
-                    name: Math.floor(Math.random()*16777215).toString(16),
-                    type: "entity", 
-                    number_of_connections: 0,
-                    number_of_attributes: Math.ceil(Math.random()*10), 
-                    attributes: {
-                        Cuisine: ["Sandwiches", "Bar"], 
-                        Locality: ["Boston"], 
-                        Neighborhood: ["Airport", "East Boston"],
-                        Price: ["$$"]
-                    }, 
-                    connections: []
-                }
-                var node = new NodeData(fakeData);
-                node.addFakeConnections(this.nodesList);
-                this.nodesList.push(node);
-            }*/
 
             console.log('data parsed');
             this.scope.$emit(NodeDataManager.DATA_PARSED);
@@ -121,9 +65,8 @@
         {
             var i=0;
             var limit = this.nodesList.length;
-            
-            for (i=0;i<limit;++i)
-            {
+
+            for (i=0;i<limit;++i) {
                 this.nodesList[i].destroy();
             }
             this.nodesList = [];

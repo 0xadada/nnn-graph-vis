@@ -272,34 +272,6 @@
             _isolatedNode = node;
         }
 
-        function connectNode(nodeData,ribbons,spark) {
-            var node = nodeData.getVisualNode();
-            var i=0;
-            var limit = nodeData.connections.length;
-            //if (limit > 10) limit = 10;
-            for (i=0;i<limit;++i) {
-                //console.log(nodeData.connections[i].getConnectionNode())
-                var connection = nodeData.connections[i];
-                var targetID = connection.getConnectionNode();
-                // todo: generate new node if none present
-                if (_nodeDataManager.getNodeByID(targetID) === undefined) return;
-                var linkNodeData = _nodeDataManager.getNodeByID(targetID);
-                var linkedNode = linkNodeData.getVisualNode();
-                activateNode(linkNodeData);
-                if (linkedNode === undefined) return;
-
-                var associationRange = (1-nodeData.connections[i].getWeight()+1)*800 + 20;
-                var associationVector = __sphericalPosition(associationRange,theta,phi);  //__randomSphereVector
-
-                //todo: check current connections and calculate relative position between all associated nodes.
-                if (!connection.isConnected() && !linkNodeData.checkConnection(nodeData.getID()))
-                {
-                    connection.isConnected(true);
-                    TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,linkedNode,12]);
-                }
-            }
-        }
-
         function clusterNode(nodeData) {
             var node = nodeData.getVisualNode();
             node.isClustered = true;
@@ -344,6 +316,43 @@
             }
         }
 
+        function connectNode(nodeData,ribbons,spark) {
+            var node = nodeData.getVisualNode();
+            var i=0;
+            var limit = nodeData.connections.length;
+            //if (limit > 10) limit = 10;
+            for (i=0;i<limit;++i) {
+                //console.log(nodeData.connections[i].getConnectionNode())
+                var connection = nodeData.connections[i];
+                var targetID = connection.getConnectionNode();
+                // todo: generate new node if none present
+                if (_nodeDataManager.getNodeByID(targetID) === undefined) return;
+                var linkNodeData = _nodeDataManager.getNodeByID(targetID);
+                var linkedNode = linkNodeData.getVisualNode();
+                activateNode(linkNodeData);
+                if (linkedNode === undefined) return;
+
+                var associationRange = (1-nodeData.connections[i].getWeight()+1)*800 + 20;
+                var associationVector = __sphericalPosition(associationRange,theta,phi);  //__randomSphereVector
+
+                //todo: check current connections and calculate relative position between all associated nodes.
+                if (!connection.isConnected() && !linkNodeData.checkConnection(nodeData.getID()))
+                {
+                    connection.isConnected(true);
+                    TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,linkedNode,12]);
+                }
+            }
+        }
+
+        /**
+         * displayConnection animates a connection ribbon between the
+         * NodeConnection connection node to the initial node. It creates
+         * the initial connection.
+         *
+         * @param NodeConnection object.
+         * @param Boolean true if drawing the ribbon-style connection UI.
+         * @return void.
+         */
         function displayConnection(connection,ribbons) {
             var nodeData = _nodeDataManager.getNodeByID(connection.getInitialNode())
             var node = nodeData.getVisualNode();
@@ -352,8 +361,11 @@
 
             var associationRange = (1-connection.getWeight()+1)*800 + 20;
             var associationVector = __randomSphereVector(associationRange);
+            // if the nodes aren't connected, connec them.
             if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID())) {
+                // connect them
                 connection.isConnected(true);
+                // move-to animate the connectNode prior to linking animation
                 TweenMax.to(connectNode.position, 1, {
                     ease : Quad.easeInOut,
                     x : node.position.x+associationVector.x,
@@ -363,6 +375,7 @@
                     onUpdateParams : [connectNodeData]
                 });
             }
+            // create and animate in the new connection.
             TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
         }
 
@@ -1017,8 +1030,7 @@
         };
 
 
-        function __generateRibbonMaterial(color)
-        {
+        function __generateRibbonMaterial(color) {
             color = (color === undefined) ? '#aaaaff' : color;
             var material = new THREE.MeshBasicMaterial({
                 color: color,//'#aaaaff',//+Math.floor(Math.random()*16777215*0.5).toString(16), 
@@ -1129,43 +1141,18 @@
         /////////////////////
         //  linking functions
 
-        function __linkAttributes(connectionData,ribbons,node1,node2,signalStrength)
-        {
-            var weight;
-            // refactor into two seperate functions for attributes and nodes.
-            if (connectionData === null) {
-                weight = 0;//'attr'
-            }
-            else {
-                weight = connectionData.getWeight();
-            }
-            var connectNode = node2;
-            connectNode.parent.updateMatrixWorld();
-            connectNode.updateMatrixWorld();
-            node1.updateMatrixWorld();
-            var container = node1.parent;
-            container.updateMatrixWorld();
-
-            var connectionPointWorld = connectNode.parent.localToWorld(connectNode.position.clone());
-            var connectionLocal = node1.worldToLocal(connectionPointWorld.clone());
-            connectionLocal.x += 0;
-            if (ribbons) {
-                var theta = __calcTheta(node1.position,node2.position);
-                var phi = __calcPhi(node1.position,node2.position);
-                var startVector = __sphericalPosition(node1.coreSize,theta,phi);
-                var connection = __generateAttributeNerve(node2.coreSize,startVector,connectionLocal,true,signalStrength);
-                node1.add(connection);
-                node1.updateMatrixWorld();
-                connection.updateMatrixWorld();
-            }
-            else {
-                var connection = __generateConnectionLine(weight,new THREE.Vector3(0,0,0),connectionLocal);
-                node1.add(connection);
-            }
-            if(connectionData !== null) connectionData.setVisualConnection(connection);
-            return connection;
-        }
-
+        /**
+         * __linkNodes takes a NodeConnection, two nodes and a strength and creates
+         * a visual object that connects the visual nodes, then updates the data model
+         * with a reference to the visual object.
+         *
+         * @param NodeConnection connectionData describes the link between nodes.
+         * @param Boolean ribbons true if creating a flat node ribbon, otherwise a line.
+         * @param THREE.Object3D node1.
+         * @param THREE.Object3D node2.
+         * @param Number signalStrength the weight?
+         * @return NodeConnection connection the new NodeConnection between nodes.
+         */
         function __linkNodes(connectionData,ribbons,node1,node2,signalStrength) {
             var weight;
             // refactor into two seperate functions for attributes and nodes.
@@ -1334,138 +1321,27 @@
             connectGeom.verticesNeedUpdate = true;
         }
 
-        function __generateAttributeNerve(coreSize,v1,v2,motion) {
-            var dist = v1.distanceTo(v2);
-            var weight = 0;
-            var connectGeom = new THREE.PlaneGeometry(0.1*(Math.abs(weight)+1),dist/10,1,Math.ceil(dist/2));
-            var glowGeom = connectGeom.clone();
-            var connectMat = _attributeRibbonMat.clone();//_ribbonConnectionMats[weight];
-            //console.log(connectMat);
-            var originP = v1;
-            var connectionP = v2; 
-            var i=0;
-            var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
-            //connectGeom.vertices[0] = originP;
-            //connectGeom.vertices[1] = originP;
-            var vectorOffset = new THREE.Vector3(0,0,0);
-            var counter = -1;
-
-            var spread = limit>>1;
-            var xDist = (v2.x - v1.x);
-            var yDist = (v2.y - v1.y);
-            var zDist = (v2.z - v1.z);
-            var rnd = Math.random()*10-5
-
-
-            var tl = new TimelineMax({/*repeat:-1,repeatDelay:.4,yoyo:true,*/onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-            tl.addLabel('fire');
-
-            var xRnd = coreSize * 3;
-            for (i=0;i<limit;++i)
-            {
-                //todo increment by 2 to keep nodes next to each other 
-                if (i%2==0) counter++;
-                var vect = connectGeom.vertices[i];//new THREE.Vector3();
-
-                vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-
-                var tarX = v1.x +/*Math.random() - 0.5 +*/ ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                var tarY = v1.y +/*Math.random() - 0.5 +*/ ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.cos(i/100)*10;//(i/10)*(dist/300) + Math.cos(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-                var tarZ = v1.z +/*Math.random() - 0.5 +*/ ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;// *dist/30;// + Math.sin(i/100)*10;//(i/10)*(dist/300) + Math.sin(i/10)*((spread>>1)-(Math.abs((spread>>1)-i)))/2;
-
-                vect.x = 0;
-                vect.y = 0;
-                vect.z = 0;
-
-                var speed = i/200;
-
-                tl.to(vect,speed,{ease:Linear.easeOut,x:tarX,y:tarY,z:tarZ},'fire');
-            }
-
-            connectGeom.vertices[limit-2] = connectionP;
-            connectGeom.vertices[limit-1] = connectionP;
-
-            limit = connectGeom.faces.length;
-            var ribbonWeight = Math.floor(5+weight*5);
-            var rndUV = _ribbonUvs[ribbonWeight];
-            //console.log(ribbonWeight)
-            //var rndUV = _textureUvs[Math.floor(Math.random()*10)];
-            for(i=0;i<limit;++i) {
-                var face = connectGeom.faces[i];
-            }
-
-            var connection = new THREE.Mesh(connectGeom,connectMat);
-            connection.material.side = THREE.DoubleSide;
-            return connection;
-        }
-
-
-        function __generateAttributeRibbon(coreSize,v1,v2,motion)
-        {
-            var dist = v1.distanceTo(v2);
-            var weight = 0;
-            var connectGeom = new THREE.PlaneGeometry(0.1*(Math.abs(weight)+1),dist/10,1,Math.ceil(dist/2));
-            var glowGeom = connectGeom.clone();
-            var connectMat = _attributeRibbonMat.clone();//_ribbonConnectionMats[weight];
-            //console.log(connectMat);
-            var originP = v1;
-            var connectionP = v2; 
-            var i=0;
-            var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
-            //connectGeom.vertices[0] = originP;
-            //connectGeom.vertices[1] = originP;
-            var vectorOffset = new THREE.Vector3(0,0,0);
-            var counter = -1;
-
-            var spread = limit>>1;
-            var xDist = (v2.x - v1.x);
-            var yDist = (v2.y - v1.y);
-            var zDist = (v2.z - v1.z);
-            var rnd = Math.random()*10-5
-
-             var tl = new TimelineMax({/*repeat:-1,repeatDelay:.4,yoyo:true,*/onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
-            tl.addLabel('fire');
-
-            for (i=0;i<limit;++i)
-            {
-                //todo increment by 2 to keep nodes next to each other 
-                if (i%2==0) counter++;
-                var vect = connectGeom.vertices[i];//new THREE.Vector3();
-
-                vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-
-                tarX = v1.x + Math.sin(counter/spread*10) + ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;
-                tarY = v1.y + Math.cos(counter/spread*10) + ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;
-                tarZ = v1.z + Math.sin(counter/spread*10) + ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1))/3;
-
-                vect.x = 0;
-                vect.y = 0;
-                vect.z = 0;
-
-                var speed = i/200;
-
-                tl.to(vect,speed,{ease:Linear.easeOut,x:tarX,y:tarY,z:tarZ},'fire');
-            }
-
-            connectGeom.vertices[limit-2] = connectionP;
-            connectGeom.vertices[limit-1] = connectionP;
-
-            limit = connectGeom.faces.length;
-            var ribbonWeight = Math.floor(5+weight*5);
-            var rndUV = _ribbonUvs[ribbonWeight];
-            for(i=0;i<limit;++i) {
-                var face = connectGeom.faces[i];
-            }
-
-            var connection = new THREE.Mesh(connectGeom,connectMat);
-            connection.material.side = THREE.DoubleSide;
-            return connection;
-        }
-
-        function __generateConnectionNerve(coreSize,v1,v2,motion) {
-            var dist = v1.distanceTo(v2);
-            var weight = 0;
-            var connectGeom = new THREE.PlaneGeometry(0.1*(Math.abs(weight)+1),dist/10,1,Math.ceil(dist/5));
+        /**
+         * __generateConnectionNerve creates and returns a THREE.Object3D
+         * mesh between two points.
+         *
+         * @param Number coreSize the size of the core.
+         * @param THREE.Vector3 v1 xyz coordinates of starting point.
+         * @param THREE.Vector3 v2 xyz coordinates of destination point.
+         * @motion Boolean true if animation is need.
+         * @param Number signalStrength value of the weighted connection.
+         * @return THREE.Object3D mesh of the connection nerve.
+         */
+        function __generateConnectionNerve(coreSize, v1, v2, motion, signalStrength) {
+            var dist = v1.distanceTo(v2),
+                weight = 0,
+                geomWidth = signalStrength;
+            var connectGeom = new THREE.PlaneGeometry(
+                /* width 0.1*(Math.abs(weight)+1) */ geomWidth,
+                /* height */ dist/10,
+                /* width segments */ 1,
+                /* height segments: Math.ceil(dist/5) */ 1
+            );
 
             var glowGeom = connectGeom.clone();
             var connectMat = _ribbonMat.clone();//_ribbonConnectionMats[weight];
@@ -1489,7 +1365,11 @@
 
             var xRnd = coreSize * 3;
 
-            var tl = new TimelineMax({delay:1,/*repeat:-1,repeatDelay:.4,yoyo:true,*/onUpdate:__onFlagGeometryForUpdate,onUpdateParams:[connectGeom]});
+            var tl = new TimelineMax({
+                delay : 1,/*repeat:-1,repeatDelay:.4,yoyo:true,*/
+                onUpdate : __onFlagGeometryForUpdate,
+                onUpdateParams:[connectGeom]
+            });
             tl.addLabel('fire');
             for (i=0;i<limit;++i) {
                 //todo increment by 2 to keep nodes next to each other 
@@ -1512,7 +1392,12 @@
                     tarZ = connectionP.z;
                 }
 
-                if (counter %10 == 0) bezPath = bezPath.concat([{x:tarX+20*(Math.random()-0.5), y:tarY+20*(Math.random()-0.5), z:tarZ+20*(Math.random()-0.5)}]);
+                if (counter %10 == 0)
+                    bezPath = bezPath.concat([{
+                        x : tarX+20*(Math.random()-0.5),
+                        y : tarY+20*(Math.random()-0.5),
+                        z : tarZ+20*(Math.random()-0.5)
+                }]);
                 var outputPath = bezPath.concat([{x:tarX, y:tarY, z:tarZ}])
 
                 var bezierObj = {curviness:2.0, values:outputPath, autoRotate:false};
@@ -1520,14 +1405,18 @@
                 var speed = i/100;//(limit/dist)*i*10
 
                 //SPARKY SIGNAL VERY INTENSIVE //tl.to(vect,speed,{ease:Linear.easeNone,x:tarX,y:tarY,z:tarZ, bezier:bezierObj},'fire');
-                tl.to(vect,speed,{ease:Quad.easeInOut,x:tarX,y:tarY,z:tarZ},'fire');
+                tl.to(vect, speed, {
+                    ease : Quad.easeInOut,
+                    x : tarX,
+                    y : tarY,
+                    z : tarZ
+                }, 'fire');
             }
 
             limit = connectGeom.faces.length;
             var ribbonWeight = Math.floor(5+weight*5);
             var rndUV = _ribbonUvs[ribbonWeight];
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 var face = connectGeom.faces[i];
             }
 

@@ -82,9 +82,10 @@
             // load data, which will kickoff $scope.demoAnimation
             $scope.getGraphData();
         }
+
         /**
-         * demoAnimation toggles playback of the animation using the TweenMax
-         * animation library.
+         * demoAnimation programatically animates a timeline of story events
+         * over time using the TweenMax animation library.
          *
          * @return void.
          */
@@ -95,6 +96,7 @@
 
             // begin animation
             TweenMax.delayedCall(1,$scope.locateNode,[1553718,8,true]);
+
             TweenMax.delayedCall(5,Visualizer.setFogLevel,[0.001,3]);
             TweenMax.delayedCall(8,Visualizer.spinCamera,[10]);
 
@@ -137,9 +139,15 @@
             TweenMax.delayedCall(108,Visualizer.setFogLevel,[0.0006,6]);
         }
 
+        /**
+          * demoLocateNodeConnection animates by focusing on the currently active node
+          * visually focuses on the connection, shifts focus to the node to
+          * connect to, then spins the camera.
+          * @return void.
+          */
         $scope.demoLocateNodeConnection = function() {
             var connection = $scope.activeNode.getConnections()[0];
-            console.log(connection);
+            console.log('framework.js', 'demoLocateNodeConnection', connection);
             $scope.displayConnection(connection);
             TweenMax.delayedCall(2,$scope.locateNode,[connection.getConnectionNode(),5,false]);
             TweenMax.delayedCall(6,Visualizer.spinCamera,[5]);
@@ -150,6 +158,7 @@
          * createNode an alias for the Visualizer node create.
          *
          * @param NodeData Object nodeData data about the node.
+         * @param Optional x, y, z coordinates.
          */
         $scope.createNode = function(nodeData, x, y, z) {
             // check if it is already created in the visualizer
@@ -160,12 +169,17 @@
         }
 
         $scope.highlightConnection = function(connection) {
-            if (connection.getVisualConnection() !== undefined)
-            {
+            if (connection.getVisualConnection() !== undefined) {
                 Visualizer.highlightConnection(connection);
             }
         }
 
+        /**
+         * branchNode invokes multiple connectNode calls for a given node.
+         * @param String nodeID the node to connect from.
+         * @param Number levelsDeep how many connections to limit.
+         * @return void.
+         */
         $scope.branchNode = function(nodeID, levelsDeep, originID) {
             if (levelsDeep <= 0) return;
             var i=0;
@@ -173,15 +187,12 @@
             if (nodeData === undefined) return;
             var limit = nodeData.connections.length;
             //todo: add in branched node list to check against to prevent loop backs.
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 var connection = nodeData.connections[i];
-                if (nodeData)
-                {
+                if (nodeData) {
                     var connectionNode = $scope.getNodeDataByID(connection.getConnectionNode());
                     if (connectionNode !== undefined) $scope.createNode(connectionNode)
-                    if (connection.getConnectionNode() !== originID)
-                    {
+                    if (connection.getConnectionNode() !== originID) {
                         TweenMax.delayedCall(Math.random()*4+1,$scope.branchNode,[connection.getConnectionNode(),--levelsDeep,nodeID])
                     }
                 }
@@ -250,6 +261,14 @@
             Visualizer.isolateNode(node);
         }
 
+        /**
+         * displayConnection takes a NodeConnection object and calls the visualizer
+         * to animate between the two nodes, highlighting their connection. If the
+         * start of end node haven't been created (visually), they will be added
+         * to the scene with this call.
+         *
+         * @return void.
+         */
         $scope.displayConnection = function(connection) {
             var initNode = $scope.nodeDataManager.getNodeByID(connection.getInitialNode());
             var connectNode = $scope.nodeDataManager.getNodeByID(connection.getConnectionNode());
@@ -264,8 +283,7 @@
             var connections = node.getConnections();
             var i=0;
             var limit = connections.length;
-            for(i=0;i<limit;++i)
-            {
+            for(i=0;i<limit;++i) {
                 var nodeData = $scope.nodeDataManager.getNodeByID(connections[i].getConnectionNode());
                 console.log(connections[i].getConnectionNode());
                 if (nodeData.getVisualNode() === undefined) $scope.createNode(nodeData);
