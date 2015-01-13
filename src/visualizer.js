@@ -1346,6 +1346,8 @@
             );
 
             var connectMat = _ribbonMat.clone();
+            // adjust opacity per signalStrength
+            connectMat.opacity = signalStrength;
 
             var i = 0;
             var limit = connectGeom.vertices.length;
