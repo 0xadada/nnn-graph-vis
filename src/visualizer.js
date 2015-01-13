@@ -336,10 +336,10 @@
                 var associationVector = __sphericalPosition(associationRange,theta,phi);  //__randomSphereVector
 
                 //todo: check current connections and calculate relative position between all associated nodes.
-                if (!connection.isConnected() && !linkNodeData.checkConnection(nodeData.getID()))
-                {
+                if (!connection.isConnected() && !linkNodeData.checkConnection(nodeData.getID())) {
                     connection.isConnected(true);
-                    TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,linkedNode,12]);
+                    // TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,linkedNode,12]);
+                    TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,linkedNode,connection.weight]);
                 }
             }
         }
@@ -354,13 +354,14 @@
          * @return void.
          */
         function displayConnection(connection,ribbons) {
-            var nodeData = _nodeDataManager.getNodeByID(connection.getInitialNode())
-            var node = nodeData.getVisualNode();
-            var connectNodeData = _nodeDataManager.getNodeByID(connection.getConnectionNode())
-            var connectNode = connectNodeData.getVisualNode();
+            var nodeData = _nodeDataManager.getNodeByID(connection.getInitialNode()),
+                node = nodeData.getVisualNode(),
+                connectNodeData = _nodeDataManager.getNodeByID(connection.getConnectionNode()),
+                connectNode = connectNodeData.getVisualNode();
 
-            var associationRange = (1-connection.getWeight()+1)*800 + 20;
-            var associationVector = __randomSphereVector(associationRange);
+                associationRange = (1-connection.getWeight()+1)*800 + 20,
+                associationVector = __randomSphereVector(associationRange),
+                signalStrength = connection.weight;
             // if the nodes aren't connected, connec them.
             if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID())) {
                 // connect them
@@ -376,7 +377,8 @@
                 });
             }
             // create and animate in the new connection.
-            TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
+            // TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
+            TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,signalStrength]);
         }
 
         function highlightConnection(connection) {
@@ -1335,21 +1337,18 @@
         function __generateConnectionNerve(coreSize, v1, v2, motion, signalStrength) {
             var dist = v1.distanceTo(v2),
                 weight = 0,
-                geomWidth = signalStrength;
+                geomWidth = signalStrength * 1000;
             var connectGeom = new THREE.PlaneGeometry(
                 /* width 0.1*(Math.abs(weight)+1) */ geomWidth,
                 /* height */ dist/10,
                 /* width segments */ 1,
-                /* height segments: Math.ceil(dist/5) */ 1
+                /* height segments Math.ceil(dist/5) */ 3
             );
 
-            var glowGeom = connectGeom.clone();
-            var connectMat = _ribbonMat.clone();//_ribbonConnectionMats[weight];
+            var connectMat = _ribbonMat.clone();
 
-            var originP = v1;
-            var connectionP = v2; 
-            var i=0;
-            var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
+            var i = 0;
+            var limit = connectGeom.vertices.length;
 
             var vectorOffset = new THREE.Vector3(0,0,0);
             var counter = -1;
@@ -1360,64 +1359,67 @@
             var zDist = (v2.z - v1.z);
             var minDist = Math.min(xDist,yDist,zDist);
             var maxDist = Math.max(xDist,yDist,zDist);
-            var rnd = Math.random()*10-5
-            var bezPath = [{x:0,y:0,z:0}];
-
+            var rnd = Math.random()*10-5;
             var xRnd = coreSize * 3;
 
             var tl = new TimelineMax({
-                delay : 1,/*repeat:-1,repeatDelay:.4,yoyo:true,*/
+                delay : 1,
                 onUpdate : __onFlagGeometryForUpdate,
-                onUpdateParams:[connectGeom]
+                onUpdateParams : [connectGeom]
             });
             tl.addLabel('fire');
-            for (i=0;i<limit;++i) {
+
+            for (i = 0; i < limit; ++i) {
                 //todo increment by 2 to keep nodes next to each other 
-                if (i%2==0) counter++;
-                var vect = connectGeom.vertices[i];//new THREE.Vector3();
-
-                vectorOffset = (new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),(Math.cos(counter/spread*Math.PI*2)),(Math.sin(counter/spread*Math.PI*2))));
-
-                var tarX = v1.x +/*Math.random() - 0.5 +*/ ((xDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.x) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
-                var tarY = v1.y +/*Math.random() - 0.5 +*/ ((yDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.y) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
-                var tarZ = v1.z +/*Math.random() - 0.5 +*/ ((zDist/spread)*counter) + ((i%2)-.5)*(spread/(counter+1)/4/spread+0.01)*xRnd+ (vectorOffset.z) *((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
-
+                if (i % 2 == 0)
+                    counter++;
+                var vect = connectGeom.vertices[i];
                 vect.x = 0;
                 vect.y = 0;
                 vect.z = 0;
 
+                vectorOffset = (
+                    new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),
+                    (Math.cos(counter/spread*Math.PI*2)),
+                    (Math.sin(counter/spread*Math.PI*2)))
+                );
+
+                var tarX = v1.x +
+                    ((xDist/spread)*counter) +
+                    ((i%2)-.5) *
+                    (spread/(counter+1)/4/spread+0.01) *
+                    xRnd +
+                    (vectorOffset.x) *((spread>>1) -
+                    (Math.abs((spread>>1)-counter)))/5;
+                var tarY = v1.y +
+                    ((yDist/spread)*counter) +
+                    ((i%2)-.5) *
+                    (spread/(counter+1)/4/spread+0.01) *
+                    xRnd +
+                    (vectorOffset.y) *
+                    ((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+                var tarZ = v1.z +
+                    ((zDist/spread)*counter) +
+                    ((i%2)-.5) *
+                    (spread/(counter+1)/4/spread+0.01) *
+                    xRnd +
+                    (vectorOffset.z) *
+                    ((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
+
                 if (i >= limit-2) {
-                    tarX = connectionP.x;
-                    tarY = connectionP.y;
-                    tarZ = connectionP.z;
+                    tarX = v2.x;
+                    tarY = v2.y;
+                    tarZ = v2.z;
                 }
 
-                if (counter %10 == 0)
-                    bezPath = bezPath.concat([{
-                        x : tarX+20*(Math.random()-0.5),
-                        y : tarY+20*(Math.random()-0.5),
-                        z : tarZ+20*(Math.random()-0.5)
-                }]);
-                var outputPath = bezPath.concat([{x:tarX, y:tarY, z:tarZ}])
+                var speed = /* i/100 */ 2.250 /* seconds */;
 
-                var bezierObj = {curviness:2.0, values:outputPath, autoRotate:false};
-
-                var speed = i/100;//(limit/dist)*i*10
-
-                //SPARKY SIGNAL VERY INTENSIVE //tl.to(vect,speed,{ease:Linear.easeNone,x:tarX,y:tarY,z:tarZ, bezier:bezierObj},'fire');
                 tl.to(vect, speed, {
                     ease : Quad.easeInOut,
                     x : tarX,
                     y : tarY,
                     z : tarZ
                 }, 'fire');
-            }
-
-            limit = connectGeom.faces.length;
-            var ribbonWeight = Math.floor(5+weight*5);
-            var rndUV = _ribbonUvs[ribbonWeight];
-            for(i=0;i<limit;++i) {
-                var face = connectGeom.faces[i];
             }
 
             var connection = new THREE.Mesh(connectGeom,connectMat);
