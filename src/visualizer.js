@@ -940,7 +940,7 @@
             });
 
             _ribbonGlowMat = new THREE.ShaderMaterial({
-                uniforms: { 
+                uniforms: {
                     "c":   { type: "f", value: 0 },
                     "p":   { type: "f", value: 5 },
                     glowColor: { type: "c", value: new THREE.Color(_colorManager.getConnectionSparkGlowColor()) },
@@ -1131,8 +1131,7 @@
             return phi;
         }
 
-        function __calcTheta(vec1,vec2)
-        {
+        function __calcTheta(vec1,vec2) {
             var xD = vec1.x - vec2.x;
             var yD = vec1.y - vec2.y;
             var zD = vec1.z - vec2.z;
@@ -1848,8 +1847,7 @@
         function __activateNodeModel(nodeData) {
             var node = nodeData.getVisualNode();
 
-            if (!node.glow)
-            {
+            if (!node.glow) {
                 var material,
                     glow,
                     label,
@@ -1857,9 +1855,15 @@
                     labelPostionY,
                     labelPostionZ,
                     labelText;
+                // texture loading for icons
+                iconTexture = THREE.ImageUtils.loadTexture('assets/images/theme-' +
+                    window.nara.theme +
+                    '/icon-restaurant.svg'
+                );
                 // ToDo: use MeshLambertMaterial if you want it to reflect light
                 material = new THREE.MeshBasicMaterial( {
-                    color: 0xffffff
+                    color : 0xffffff,
+                    map : iconTexture
                 } );
 
                 glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), material );
