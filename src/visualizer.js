@@ -1357,8 +1357,6 @@
             var xDist = (v2.x - v1.x);
             var yDist = (v2.y - v1.y);
             var zDist = (v2.z - v1.z);
-            var minDist = Math.min(xDist,yDist,zDist);
-            var maxDist = Math.max(xDist,yDist,zDist);
             var rnd = Math.random()*10-5;
             var xRnd = coreSize * 3;
 
