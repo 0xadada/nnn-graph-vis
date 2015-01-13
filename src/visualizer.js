@@ -1856,9 +1856,12 @@
                     labelPostionZ,
                     labelText;
                 // texture loading for icons
-                iconTexture = THREE.ImageUtils.loadTexture('assets/images/theme-' +
+                var iconFileName = nodeData.type === 'entity' ?
+                        '/icon-restaurant.svg' :
+                        '/icon-user.svg';
+                var iconTexture = THREE.ImageUtils.loadTexture('assets/images/theme-' +
                     window.nara.theme +
-                    '/icon-restaurant.svg'
+                    iconFileName
                 );
                 // ToDo: use MeshLambertMaterial if you want it to reflect light
                 material = new THREE.MeshBasicMaterial( {
