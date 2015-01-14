@@ -1981,6 +1981,7 @@
 
                 glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), material );
                 glow.material.side = THREE.FrontSide;
+                glow.rotation.y = 1.5;
                 glow.scale.multiplyScalar(1.125);
 
                 // create the label text
