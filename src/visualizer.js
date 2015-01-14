@@ -385,7 +385,7 @@
             if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID()))
             {
                 connection.isConnected(true);
-                TweenMax.to(connectNode.position,1,{ease:Quad.easeInOut,x:node.position.x+associationVector.x,y:node.position.y+associationVector.y,z:node.position.z+associationVector.z,onUpdate:__onNodeMove,onUpdateParams:[connectNodeData]});
+                //TweenMax.to(connectNode.position,1,{ease:Quad.easeInOut,x:node.position.x+associationVector.x,y:node.position.y+associationVector.y,z:node.position.z+associationVector.z,onUpdate:__onNodeMove,onUpdateParams:[connectNodeData]});
             }
             TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
                 
