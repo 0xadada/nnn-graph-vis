@@ -122,19 +122,19 @@
 {
     "id":"1000021",
     "node_name":"",
-    "node_type":"entity",
+    "node_type":"inhibition",
     "connections":[{"id":"1000022","weight":"1"},{"id":"1000023","weight":"1"}]
 },
 {
     "id":"1000022",
     "node_name":"",
-    "node_type":"entity",
+    "node_type":"cuisine",
     "connections":[{}]
 },
 {
     "id":"1000023",
     "node_name":"",
-    "node_type":"entity",
+    "node_type":"anonymous",
     "connections":[{}]
 }
 ]
