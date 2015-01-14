@@ -101,7 +101,9 @@
             TweenMax.delayedCall(8,Visualizer.spinCamera,[10]);
 
             TweenMax.delayedCall(10,$scope.demoLocateNodeConnection);
+            /* new: */ TweenMax.delayedCall(15,$scope.highlightNode);
             TweenMax.delayedCall(20,$scope.demoLocateNodeConnection);
+return;
 
 
             TweenMax.delayedCall(30,$scope.locateNode,[1553718,4,false]);
@@ -187,6 +189,18 @@
             if (connection.getVisualConnection() !== undefined) {
                 Visualizer.highlightConnection(connection);
             }
+        }
+
+        /**
+         * highlightNode takes the currently active node and
+         * animates the node.
+         *
+         * @param Number nodeId the node id to highlight.
+         * @return void.
+         */
+        $scope.highlightNode = function() {
+            var activeNode3D = $scope.activeNode.getVisualNode();
+            Visualizer.highlightNode( activeNode3D )
         }
 
         /**

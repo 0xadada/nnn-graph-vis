@@ -385,6 +385,10 @@
             __vibrateConnectionNerve(connection);
         }
 
+        function highlightNode( nodeData ) {
+            __highlightNode( nodeData );
+        }
+
         function clusterNodes(nodes) {
             var i=0;
             var limit = nodes.length;
@@ -1544,6 +1548,31 @@
             });
         }
 
+        /**
+         * __highlightNode flashes the opacity of the visual node passed in.
+         *
+         * @param THREE.Object3D activeNode3D node in the scene.
+         * @return void.
+         */
+        function __highlightNode( activeNode3D ) {
+            // bail if there is no no-glow object.
+            if( activeNode3D.glow === undefined ) return;
+            // pull out glow child 3d object.
+            var geometry = activeNode3D.glow.geometry,
+                material = activeNode3D.glow.material,
+                opacity = 0;
+
+            material.transparent = true;
+            // animate the opacity
+            TweenMax.to( material, 0.5, {
+                opacity : 0,
+                repeat : 5,
+                yoyo : true,
+                onUpdate : __onFlagMaterialForUpdate,
+                onUpdateParams : [ material ]
+            });
+        }
+
         function __generateConnectionRibbon(weight,v1,v2,motion) {
             var dist = v1.distanceTo(v2);
             var connectGeom = connection.getVisualConnection().geometry;
@@ -2152,6 +2181,7 @@
             connectAllNodes : connectAllNodes,
             displayConnection : displayConnection,
             highlightConnection : highlightConnection,
+            highlightNode : highlightNode,
             addNodeToStage : addNodeToStage,
             removeNodeFromStage : removeNodeFromStage,
             spinCamera : spinCamera,
