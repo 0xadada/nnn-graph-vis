@@ -85,11 +85,80 @@
 
         /**
          * demoAnimation programatically animates a timeline of story events
-         * over time using the TweenMax animation library.
+         * over time using the TweenMax animation library.  It also provides
+         * a way to "source select" which movie to run.
          *
          * @return void.
          */
         $scope.demoAnimation = function() {
+        
+            // Here is where you can set different movie sequences to run
+            // when you click the "Connect" button.
+            //
+            // Eventually it can be made more sophisticated, using keyboard
+            // input or other mechanisms to select which scene to play.
+            var scene_to_run = 1;
+            if(scene_to_run == 1) {
+                $scope.demoAnimationBEAM();
+            } else if(scene_to_run == 2) {
+                $scope.scene1();
+            }
+        
+        }
+        
+        /**
+         * tees up an event to make a node appear during the movie
+         * 
+         * @param int t the absolute time in the movie for which to fire the event.
+         * @param int node_id the id of the node, which should already be loaded into memory.
+         * @param int x the x coordinate for the node's desired position.
+         * @param int y the y coordinate for the node's desired position.
+         * @param int z the z coordinate for the node's desired position.
+         *
+         * @return void.
+         */        
+        $scope.drawNode = function(t, node_id, x, y, z) {
+            var nodeData = $scope.getNodeDataByID(node_id);
+            TweenMax.delayedCall(t,$scope.createNode,[nodeData,x,y,z]);
+            TweenMax.delayedCall(t,Visualizer.activateNode,[nodeData,true]);        
+        }
+
+        /**
+         * tees up an event to move to a node during the movie
+         * 
+         * @param int t the absolute time in the movie for which to fire the event.
+         * @param int node_id the id of the node, which should already be loaded into memory.
+         * @param int move_time the time in seconds that it should take to complete the move.
+         * @param boolean used_curve_path whether to fly straight to the node (false) or do a curve (true)
+         *
+         * @return void.
+         */                
+        $scope.moveToNode = function(t, node_id, move_time, use_curved_path) {
+            TweenMax.delayedCall(t,$scope.locateNode,[node_id,move_time,use_curved_path]);
+        }
+
+        /**
+         * tees up an event to make a connection appear during the movie
+         * 
+         * @param int t the absolute time in the movie for which to fire the event.
+         * @param int node_id the id of the node that is the source of the connection
+         * @param int connection_number the id of the node's connection (starting at 0) to draw
+         *
+         * @return void.
+         */                        
+        $scope.showConnection = function(t, node_id, connection_number) {
+            var node = $scope.nodeDataManager.nodesHash[node_id];
+            var connection = node.connections[connection_number];
+            TweenMax.delayedCall(t,Visualizer.displayConnection,[connection,true]);
+        }    
+        
+        /**
+         * this is one animation that we can call from demoAnimation()
+         * it was designed by BEAM
+         *
+         * @return void.
+         */
+        $scope.demoAnimationBEAM = function() {
             // begin playback
             $scope.isPaused = false;
             $scope.animationBegan = true;
@@ -137,6 +206,119 @@
             TweenMax.delayedCall(102,$scope.locateNode,[1553718,6,true]);
             TweenMax.delayedCall(107,Visualizer.spinCamera,[10]);
             TweenMax.delayedCall(108,Visualizer.setFogLevel,[0.0006,6]);
+        }
+
+        /**
+         * this is another animation that we can call from demoAnimation()
+         * it was designed by Nara, to depict the first network in the storyboard.
+         *
+         * @return void.
+         */
+        $scope.scene1 = function() {
+        
+            // start the timer
+            t = 0;
+
+            // Reveal network
+            TweenMax.delayedCall(t,Visualizer.setFogLevel,[0.001,1]);
+            
+            // start at a restaurant node
+            t = t + 0.2;
+            node_id = 1;
+            move_time = 2;
+            use_curved_path = true;
+            $scope.drawNode(t, node_id, 500, 500, 500);
+            $scope.moveToNode(t, node_id, move_time, use_curved_path);
+            t = t + move_time + 1;
+            
+            // move to movie node
+            t = t + 0.2;
+            node_id = 1000001;
+            move_time = 4;
+            use_curved_path = true;
+            $scope.drawNode(t, node_id, 0, 0, 0);
+            $scope.moveToNode(t, node_id, move_time, use_curved_path);
+            t = t + move_time + 1;
+            
+            // place the connected nodes
+            $scope.drawNode(t, 1000002, 0, 125, 0);
+            $scope.drawNode(t, 1000003, 90, 90, 0);
+            $scope.drawNode(t, 1000004, 125, 0, 0);
+            $scope.drawNode(t, 1000005, 90, -90, 0);
+            $scope.drawNode(t, 1000006, 0, -125, 0);
+            $scope.drawNode(t, 1000007, -90, -90, 0);
+            $scope.drawNode(t, 1000008, -125, 0, 0);
+            $scope.drawNode(t, 1000009, -90, 90, 0);
+            $scope.drawNode(t, 1000010, -220, -55, 0);
+            
+            // reviewer and movies
+            $scope.drawNode(t, 1000011, 170, 75, 0);
+            $scope.drawNode(t, 1000012, 250, 75, 0);
+            $scope.drawNode(t, 1000013, 170, 150, 0);
+
+            // purchase and movies
+            $scope.drawNode(t, 1000014, 170, -75, 0);
+            $scope.drawNode(t, 1000015, 250, -75, 0);
+            $scope.drawNode(t, 1000016, 170, -170, 0);
+            $scope.drawNode(t, 1000017, 240, -140, 0);
+
+            // Webpage and movies
+            $scope.drawNode(t, 1000018, -170, 75, 0);
+            $scope.drawNode(t, 1000019, -250, 75, 0);
+            $scope.drawNode(t, 1000020, -170, 150, 0);
+
+            // inhibition from attribute 1000007
+            $scope.drawNode(t, 1000021, -90, -165, 0);
+            $scope.drawNode(t, 1000022, -130, -215, 0);
+            $scope.drawNode(t, 1000023, -50, -215, 0);        
+            
+            // zoom out
+            t_effect = t;
+            t_effect = t_effect + 1;
+            TweenMax.delayedCall(t_effect,Visualizer.zoomCamera,[500,1]);
+            
+            // do a spin
+            t_effect = t_effect + 2;
+            TweenMax.delayedCall(t_effect,Visualizer.spinCamera,[2]);
+
+            // do a spin
+            t_effect = t_effect + 2;
+            TweenMax.delayedCall(t_effect,Visualizer.spinCamera,[2]);
+            
+            // show connections
+            $scope.showConnection(t, 1000001, 0);
+            $scope.showConnection(t, 1000001, 1);
+            $scope.showConnection(t, 1000001, 2);
+            $scope.showConnection(t, 1000001, 3);
+            $scope.showConnection(t, 1000001, 4);
+            $scope.showConnection(t, 1000001, 5);
+            $scope.showConnection(t, 1000001, 6);
+            $scope.showConnection(t, 1000001, 7);
+
+            // attribute to movie
+            $scope.showConnection(t, 1000008, 0);
+
+            // reviewer and connections
+            $scope.showConnection(t, 1000001, 8);
+            $scope.showConnection(t, 1000011, 0);
+            $scope.showConnection(t, 1000011, 1);
+            
+            // purchase and connections
+            $scope.showConnection(t, 1000001, 9);
+            $scope.showConnection(t, 1000014, 0);
+            $scope.showConnection(t, 1000014, 1);
+            $scope.showConnection(t, 1000014, 2);
+            
+            // webpage and connections
+            $scope.showConnection(t, 1000001, 10);
+            $scope.showConnection(t, 1000018, 0);
+            $scope.showConnection(t, 1000018, 1);
+            
+            // inhibitory connections
+            $scope.showConnection(t, 1000007, 0);
+            $scope.showConnection(t, 1000021, 0);
+            $scope.showConnection(t, 1000021, 1);
+        
         }
 
         /**
@@ -330,8 +512,6 @@
 
         $scope.onDataParsed = function() {
             //todo: possible add call back from visualizer that staggers each call until listener is triggered from previous node geometry is generated and placed.
-            console.log('data parsed');
-            console.log($scope.nodes[0])
             $scope.demoAnimation();
         }
 
