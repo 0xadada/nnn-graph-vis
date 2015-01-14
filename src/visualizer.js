@@ -398,7 +398,6 @@
                 associationVector = __randomSphereVector(associationRange),
                 signalStrength = connection.weight;
             // if the nodes aren't connected, connec them.
-            debugger;
             if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID())) {
                 // connect them
                 connection.isConnected(true);
@@ -1372,7 +1371,7 @@
                 /* width 0.1*(Math.abs(weight)+1) */ geomWidth,
                 /* height */ dist/10,
                 /* width segments */ 1,
-                /* height segments Math.ceil(dist/5) */ 3
+                /* height segments */ Math.ceil(dist/5)
             );
 
             var connectMat = _ribbonMat.clone();

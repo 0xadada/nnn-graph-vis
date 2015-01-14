@@ -151,6 +151,23 @@
             var connection = node.connections[connection_number];
             TweenMax.delayedCall(t,Visualizer.showConnection,[connection,true]);
         }    
+
+        /**
+         * tees up an event to make a connection appear during the movie
+         * 
+         * @param int t the absolute time in the movie for which to fire the event.
+         * @param int node_id the id of the node that is the source of the connection
+         * @param int connection_number the id of the node's connection (starting at 0) to draw
+         *
+         * @return void.
+         */                        
+        $scope.animateConnection = function(t, node_id, connection_number) {
+            var node = $scope.nodeDataManager.nodesHash[node_id];
+            var connection = node.connections[connection_number];
+            if (connection.getVisualConnection() !== undefined) {
+                Visualizer.highlightConnection(connection);
+            }
+        }    
         
         /**
          * this is one animation that we can call from demoAnimation()
@@ -322,6 +339,10 @@
             $scope.showConnection(t, 1000007, 0);
             $scope.showConnection(t, 1000021, 0);
             $scope.showConnection(t, 1000021, 1);
+            
+            // highlight a connection
+            t = t + 6;
+            TweenMax.delayedCall(t,$scope.animateConnection,[t,1000001,0]);
         
         }
 
