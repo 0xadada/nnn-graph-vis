@@ -1577,15 +1577,15 @@
         /**
          * __highlightNode flashes the opacity of the visual node passed in.
          *
-         * @param THREE.Object3D activeNode3D node in the scene.
+         * @param THREE.Object3D node3D node in the scene.
          * @return void.
          */
-        function __highlightNode( activeNode3D ) {
+        function __highlightNode( /* THREE.Object3D */ node3D ) {
             // bail if there is no no-glow object.
-            if( activeNode3D.glow === undefined ) return;
+            if( node3D.glow === undefined ) return;
             // pull out glow child 3d object.
-            var geometry = activeNode3D.glow.geometry,
-                material = activeNode3D.glow.material,
+            var geometry = node3D.glow.geometry,
+                material = node3D.glow.material,
                 opacity = 0;
 
             material.transparent = true;
