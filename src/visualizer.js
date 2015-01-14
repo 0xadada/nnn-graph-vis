@@ -1898,10 +1898,22 @@
                     labelPostionY,
                     labelPostionZ,
                     labelText;
+
                 // texture loading for icons
-                var iconFileName = nodeData.type === 'entity' ?
-                        '/icon-restaurant.svg' :
-                        '/icon-user.svg';
+                var iconFileName = '/icon-user.svg';
+                if( nodeData.type === 'entity' ) {
+                    iconFileName = '/icon-restaurant.svg';
+                }
+                if( nodeData.type === 'cuisine' ) {
+                    iconFileName = '/icon-cuisine.svg';
+                }
+                if( nodeData.type === 'anonymous' ) {
+                    iconFileName = '/icon-anonymous.svg';
+                }
+                if( nodeData.type === 'inhibition' ) {
+                    iconFileName = '/icon-inhibition.svg';
+                }
+
                 var iconTexture = THREE.ImageUtils.loadTexture('assets/images/theme-' +
                     window.nara.theme +
                     iconFileName
