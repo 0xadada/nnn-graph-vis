@@ -498,6 +498,10 @@
             }
         }
 
+        function __onFlagMaterialForUpdate( material ) {
+            material.needsUpdate = true;
+        }
+
         function __onDocumentMouseWheel(evt) {
             var d = evt.originalEvent.wheelDelta/5;
             _cameraZoom -= d;
@@ -841,7 +845,7 @@
 
             _distantNodePartMat = new THREE.PointCloudMaterial({
                 color: _colorManager.getNodeParticleBaseColor(),//nodeData.baseColor,
-                size: 200, 
+                size: 200,
                 map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/node-1.png'),
                 depthWrite:false,
                 side:THREE.DoubleSide,
@@ -967,7 +971,7 @@
             });
 
             _ribbonGlowMat = new THREE.ShaderMaterial({
-                uniforms: { 
+                uniforms: {
                     "c":   { type: "f", value: 0 },
                     "p":   { type: "f", value: 5 },
                     glowColor: { type: "c", value: new THREE.Color(_colorManager.getConnectionSparkGlowColor()) },
@@ -1158,8 +1162,7 @@
             return phi;
         }
 
-        function __calcTheta(vec1,vec2)
-        {
+        function __calcTheta(vec1,vec2) {
             var xD = vec1.x - vec2.x;
             var yD = vec1.y - vec2.y;
             var zD = vec1.z - vec2.z;
@@ -1500,29 +1503,72 @@
 
 
         function __vibrateConnectionNerve(connection) {
-            var connectGeom = connection.getVisualConnection().geometry; 
+            var connectGeom = connection.getVisualConnection().geometry,
+                connectMat = connection.getVisualConnection().material,
+                counter = -1,
+                i = 0,
+                cI = 0,
+                limit = connectGeom.vertices.length,
+                color = null,
+                originalOpacity = connectMat.opacity,
+                spread = limit,
+                vect = null,
+                vectorOffset = null;
+
             connectGeom.verticesNeedUpdate = true;
 
-            var i=0;
-            var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
-
-            var spread = limit;
-
-            var counter = -1;
-            for (i=0;i<limit;++i) {
+            for (i = 0; i < limit; ++i) {
                 if (i%2==0) counter++;
-                var vect = connectGeom.vertices[i];
-                vectorOffset = (new THREE.Vector3((Math.cos(counter/spread*Math.PI*2)*10),(Math.sin(counter/spread*Math.PI*2)*10),(Math.cos(counter/spread*Math.PI*2)*10)));
+                vect = connectGeom.vertices[i];
+                vectorOffset = (
+                    new THREE.Vector3((Math.cos(counter/spread*Math.PI*2)*10),
+                    (Math.sin(counter/spread*Math.PI*2)*10),
+                    (Math.cos(counter/spread*Math.PI*2)*10))
+                );
+                // animate the position
+                /* Removed wiggle for now
                 TweenMax.to(vect, 0.5, {
-                    x : '+='+vectorOffset.x,
-                    y : '+='+vectorOffset.y,
-                    z : '+='+vectorOffset.z,
+                    x : '+=' + vectorOffset.x,
+                    y : '+=' + vectorOffset.y,
+                    z : '+=' + vectorOffset.z,
                     repeat : 1,
                     yoyo : true,
                     onUpdate : __onFlagGeometryForUpdate,
                     onUpdateParams : [connectGeom]
                 });
+                */
             }
+            // set opacity to 1
+            connectMat.opacity = 1;
+            for( cI = 0; cI <= 100; cI++ ) {
+                // ToDo: animate the color
+                color = connectMat.color;
+                TweenMax.to(color, 0.5, {
+                    r : ( cI * 0.01 ),
+                    g : ( cI * 0.01 ),
+                    b : (1 - ( cI * 0.01 ) ),
+                    repeat : 1,
+                    yoyo : true,
+                    onUpdate : __onFlagMaterialForUpdate,
+                    onUpdateParams : [connectMat]
+                });
+            }
+            // reset color
+            TweenMax.to(color, 0.5, {
+                r : 1,
+                g : 1,
+                b : 1,
+                delay : 5,
+                onUpdate : __onFlagMaterialForUpdate,
+                onUpdateParams : [connectMat]
+            });
+            // reset opacity
+            TweenMax.to(connectMat, 0.5, {
+                opacity : originalOpacity,
+                delay : 5,
+                onUpdate : __onFlagMaterialForUpdate,
+                onUpdateParams : [connectMat]
+            });
         }
 
         function __generateConnectionRibbon(weight,v1,v2,motion) {
@@ -1868,15 +1914,10 @@
             return node;
         };
 
-
-        /**
-         * __
-         */
         function __activateNodeModel(nodeData) {
             var node = nodeData.getVisualNode();
 
-            if (!node.glow)
-            {
+            if (!node.glow) {
                 var material,
                     glow,
                     label,
@@ -1884,9 +1925,30 @@
                     labelPostionY,
                     labelPostionZ,
                     labelText;
+
+                // texture loading for icons
+                var iconFileName = '/icon-user.svg';
+                if( nodeData.type === 'entity' ) {
+                    iconFileName = '/icon-restaurant.svg';
+                }
+                if( nodeData.type === 'cuisine' ) {
+                    iconFileName = '/icon-cuisine.svg';
+                }
+                if( nodeData.type === 'anonymous' ) {
+                    iconFileName = '/icon-anonymous.svg';
+                }
+                if( nodeData.type === 'inhibition' ) {
+                    iconFileName = '/icon-inhibition.svg';
+                }
+
+                var iconTexture = THREE.ImageUtils.loadTexture('assets/images/theme-' +
+                    window.nara.theme +
+                    iconFileName
+                );
                 // ToDo: use MeshLambertMaterial if you want it to reflect light
                 material = new THREE.MeshBasicMaterial( {
-                    color: 0xffffff
+                    color : 0xffffff,
+                    map : iconTexture
                 } );
 
                 glow = new THREE.Mesh( __generateNodeGlowGeometry(20,2,0), material );
