@@ -101,15 +101,11 @@
             TweenMax.delayedCall(8,Visualizer.spinCamera,[10]);
 
             TweenMax.delayedCall(10,$scope.demoLocateNodeConnection);
-            //ToDo: Uncomment TweenMax.delayedCall(20,$scope.demoLocateNodeConnection);
+            TweenMax.delayedCall(20,$scope.demoLocateNodeConnection);
 
-            // ToDo: not origin jump back to Sip wine
-            TweenMax.delayedCall(15,$scope.locateNode,[1553718,8,true]);
-            // ToDo: Hightlight here  get node connections and highlight them
-            TweenMax.delayedCall(23,$scope.highlightConnection,[1017]);
-return;
 
             TweenMax.delayedCall(30,$scope.locateNode,[1553718,4,false]);
+            // TweenMax.delayedCall(23,$scope.highlightConnection,[1017]);
             TweenMax.delayedCall(33,Visualizer.spinCamera,[10]);
             TweenMax.delayedCall(31,$scope.branchNode,[1553718,7])
 
@@ -190,7 +186,6 @@ return;
             var connection = activeNode.getConnectionByID(nodeId);
             if (connection.getVisualConnection() !== undefined) {
                 Visualizer.highlightConnection(connection);
-                window.highlightConnection = $scope.highlightConnection;
             }
         }
 

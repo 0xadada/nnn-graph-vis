@@ -1483,6 +1483,7 @@
                 cI = 0,
                 limit = connectGeom.vertices.length,
                 color = null,
+                originalOpacity = connectMat.opacity,
                 spread = limit,
                 vect = null,
                 vectorOffset = null;
@@ -1498,6 +1499,7 @@
                     (Math.cos(counter/spread*Math.PI*2)*10))
                 );
                 // animate the position
+                /* Removed wiggle for now
                 TweenMax.to(vect, 0.5, {
                     x : '+=' + vectorOffset.x,
                     y : '+=' + vectorOffset.y,
@@ -1507,21 +1509,39 @@
                     onUpdate : __onFlagGeometryForUpdate,
                     onUpdateParams : [connectGeom]
                 });
+                */
             }
-            for( cI = 100; cI >= 0; cI-- ) {
+            // set opacity to 1
+            connectMat.opacity = 1;
+            for( cI = 0; cI <= 100; cI++ ) {
                 // ToDo: animate the color
                 color = connectMat.color;
-                // animate the position
                 TweenMax.to(color, 0.5, {
                     r : ( cI * 0.01 ),
                     g : ( cI * 0.01 ),
-                    b : ( cI * 0.01 ),
+                    b : (1 - ( cI * 0.01 ) ),
                     repeat : 1,
                     yoyo : true,
                     onUpdate : __onFlagMaterialForUpdate,
                     onUpdateParams : [connectMat]
                 });
             }
+            // reset color
+            TweenMax.to(color, 0.5, {
+                r : 1,
+                g : 1,
+                b : 1,
+                delay : 5,
+                onUpdate : __onFlagMaterialForUpdate,
+                onUpdateParams : [connectMat]
+            });
+            // reset opacity
+            TweenMax.to(connectMat, 0.5, {
+                opacity : originalOpacity,
+                delay : 5,
+                onUpdate : __onFlagMaterialForUpdate,
+                onUpdateParams : [connectMat]
+            });
         }
 
         function __generateConnectionRibbon(weight,v1,v2,motion) {
