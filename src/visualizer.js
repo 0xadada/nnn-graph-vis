@@ -1983,29 +1983,32 @@
                 glow.material.side = THREE.FrontSide;
                 glow.scale.multiplyScalar(1.125);
 
-                // ToDo: Position the x, y z of the label
                 // create the label text
                 // create the label postion
-                labelPositionX = glow.position.x + 3;
-                labelPositionY = glow.position.y + 11;
-                labelPositionZ = Math.ceil( glow.position.z ) - glow.position.z;
-                labelText = ' ' + nodeData.name + ' ';
-                // draw the label
-                label = __createTextSprite( labelText, {
-                    borderThickness: 1,
-                    fontface: 'Helvetica',
-                    fontsize: 24,
-                    borderColor: {r:255, g:255, b:255, a:0.25},
-                    backgroundColor: {r:255, g:255, b:255, a:0.75}
-                } );
-                label.position.set(labelPositionX, labelPositionY, labelPositionZ);
+                if( nodeData.name.length && nodeData.name.length > 0 ) {
+                    labelPositionX = glow.position.x + 3;
+                    labelPositionY = glow.position.y + 11;
+                    labelPositionZ = Math.ceil( glow.position.z ) - glow.position.z;
+                    labelText = ' ' + nodeData.name + ' ';
+                    // draw the label
+                    label = __createTextSprite( labelText, {
+                        borderThickness: 1,
+                        fontface: 'Helvetica',
+                        fontsize: 24,
+                        borderColor: {r:255, g:255, b:255, a:0.25},
+                        backgroundColor: {r:255, g:255, b:255, a:0.75}
+                    } );
+                    label.position.set(labelPositionX, labelPositionY, labelPositionZ);
+                }
 
                 // Glow only
                 _glows.push(glow);
                 node.add( glow );
                 node.glow = glow;
                 // label too
-                node.add( label );
+                if( nodeData.name.length && nodeData.name.length > 0 ) {
+                    node.add( label );
+                }
             }
         }
 
