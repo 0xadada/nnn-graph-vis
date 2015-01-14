@@ -471,6 +471,10 @@
             }
         }
 
+        function __onFlagMaterialForUpdate( material ) {
+            material.needsUpdate = true;
+        }
+
         function __onDocumentMouseWheel(evt) {
             var d = evt.originalEvent.wheelDelta/5;
             _cameraZoom -= d;
@@ -814,7 +818,7 @@
 
             _distantNodePartMat = new THREE.PointCloudMaterial({
                 color: _colorManager.getNodeParticleBaseColor(),//nodeData.baseColor,
-                size: 200, 
+                size: 200,
                 map: THREE.ImageUtils.loadTexture('assets/images/theme-' + window.nara.theme + '/node-1.png'),
                 depthWrite:false,
                 side:THREE.DoubleSide,
@@ -1472,27 +1476,50 @@
 
 
         function __vibrateConnectionNerve(connection) {
-            var connectGeom = connection.getVisualConnection().geometry; 
+            var connectGeom = connection.getVisualConnection().geometry,
+                connectMat = connection.getVisualConnection().material,
+                counter = -1,
+                i = 0,
+                cI = 0,
+                limit = connectGeom.vertices.length,
+                color = null,
+                spread = limit,
+                vect = null,
+                vectorOffset = null;
+
             connectGeom.verticesNeedUpdate = true;
 
-            var i=0;
-            var limit = connectGeom.vertices.length;//Math.random()*dist/30+8;
-
-            var spread = limit;
-
-            var counter = -1;
-            for (i=0;i<limit;++i) {
+            for (i = 0; i < limit; ++i) {
                 if (i%2==0) counter++;
-                var vect = connectGeom.vertices[i];
-                vectorOffset = (new THREE.Vector3((Math.cos(counter/spread*Math.PI*2)*10),(Math.sin(counter/spread*Math.PI*2)*10),(Math.cos(counter/spread*Math.PI*2)*10)));
+                vect = connectGeom.vertices[i];
+                vectorOffset = (
+                    new THREE.Vector3((Math.cos(counter/spread*Math.PI*2)*10),
+                    (Math.sin(counter/spread*Math.PI*2)*10),
+                    (Math.cos(counter/spread*Math.PI*2)*10))
+                );
+                // animate the position
                 TweenMax.to(vect, 0.5, {
-                    x : '+='+vectorOffset.x,
-                    y : '+='+vectorOffset.y,
-                    z : '+='+vectorOffset.z,
+                    x : '+=' + vectorOffset.x,
+                    y : '+=' + vectorOffset.y,
+                    z : '+=' + vectorOffset.z,
                     repeat : 1,
                     yoyo : true,
                     onUpdate : __onFlagGeometryForUpdate,
                     onUpdateParams : [connectGeom]
+                });
+            }
+            for( cI = 100; cI >= 0; cI-- ) {
+                // ToDo: animate the color
+                color = connectMat.color;
+                // animate the position
+                TweenMax.to(color, 0.5, {
+                    r : ( cI * 0.01 ),
+                    g : ( cI * 0.01 ),
+                    b : ( cI * 0.01 ),
+                    repeat : 1,
+                    yoyo : true,
+                    onUpdate : __onFlagMaterialForUpdate,
+                    onUpdateParams : [connectMat]
                 });
             }
         }
@@ -1840,10 +1867,6 @@
             return node;
         };
 
-
-        /**
-         * __
-         */
         function __activateNodeModel(nodeData) {
             var node = nodeData.getVisualNode();
 

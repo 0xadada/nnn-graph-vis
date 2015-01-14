@@ -101,7 +101,14 @@
             TweenMax.delayedCall(8,Visualizer.spinCamera,[10]);
 
             TweenMax.delayedCall(10,$scope.demoLocateNodeConnection);
-            TweenMax.delayedCall(20,$scope.demoLocateNodeConnection);
+            //ToDo: Uncomment TweenMax.delayedCall(20,$scope.demoLocateNodeConnection);
+
+            // ToDo: not origin jump back to Sip wine
+            TweenMax.delayedCall(15,$scope.locateNode,[1553718,8,true]);
+            // ToDo: Hightlight here  get node connections and highlight them
+            TweenMax.delayedCall(23,$scope.highlightConnection,[1017]);
+return;
+
             TweenMax.delayedCall(30,$scope.locateNode,[1553718,4,false]);
             TweenMax.delayedCall(33,Visualizer.spinCamera,[10]);
             TweenMax.delayedCall(31,$scope.branchNode,[1553718,7])
@@ -135,6 +142,7 @@
             TweenMax.delayedCall(74,$scope.setActiveNode,[1553718])
             TweenMax.delayedCall(75,Visualizer.spinCamera,[30]);
             TweenMax.delayedCall(102,$scope.locateNode,[1553718,6,true]);
+
             TweenMax.delayedCall(107,Visualizer.spinCamera,[10]);
             TweenMax.delayedCall(108,Visualizer.setFogLevel,[0.0006,6]);
         }
@@ -164,13 +172,25 @@
             // check if it is already created in the visualizer
             if(nodeData.getVisualNode() === undefined) {
                 // create new visualizer node
-                Visualizer.createNode(nodeData,x,y,z);
+                Visualizer.createNode(nodeData, x, y, z);
             }
         }
 
-        $scope.highlightConnection = function(connection) {
+        /**
+         * highlightConnection takes the currently active node and
+         * a visuall-connected node ID and animates the connection between
+         * them.
+         *
+         * @param Number nodeId the node id connected to the active node to hightlight its connection.
+         * @return void.
+         */
+        $scope.highlightConnection = function( /* Number */ nodeId ) {
+            // get the first connection
+            var activeNode = $scope.activeNode;
+            var connection = activeNode.getConnectionByID(nodeId);
             if (connection.getVisualConnection() !== undefined) {
                 Visualizer.highlightConnection(connection);
+                window.highlightConnection = $scope.highlightConnection;
             }
         }
 
@@ -206,6 +226,15 @@
             return $scope.nodeDataManager.getNodeByID(id);
         }
 
+        /**
+         * setActiveNode creates a visual node at the specified xyz postion
+         * for a given data node Id. It then navigates the camera to the node.
+         * @param String id the node id.
+         * @param Number x the x coordinate.
+         * @param Number y the y coordinate.
+         * @param Number z the z coordinate.
+         * @return void.
+         */
         $scope.setActiveNode = function(id,x,y,z) {
             if (id===undefined) id = $scope.inputNodeID;
             var nodeData = $scope.nodeDataManager.getNodeByID(id);
