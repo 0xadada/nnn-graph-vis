@@ -18,18 +18,48 @@
 
         NodeDataManager.prototype.loadData = function(id)
         {
-            //todo: access server call to load necessary JSON data.
+
             var self = this;
+            
+            // load in the original network for BEAM to use as a backdrop
             $http.get('data/nara_boston.json').
-            //$http.get('data/boston_2000_nodes.json').
-            //$http.get('data/data_small.json').
-            //$http.get('data/data_10levels.json').
             success(function(data, status, headers, config) {
-              self.dataObj = data;
-              self.parseNodeData();
+              
+              // store the default data set for eventual concatenation
+              var data1 = data;
+              
+              // slice the BEAM data to be slightly more efficient during testing
+              // data1 = data1.slice(0,3);
+
+              // load in our new custom nodes
+              $http.get('data/scenes/scene1.json').
+              success(function(data, status, headers, config) {
+
+                // prepare the custom data for concatenation
+                data2 = data;
+                var num_nodes = Object.keys(data2).length;
+                
+                // add fields to the custom data to make it compatible with BEAM
+                for(i=0; i<num_nodes; i++) {
+                    data2[i].attributes = new Array();
+                    data2[i].number_of_attributes = 0;
+                    data2[i].number_of_connections = Object.keys(data2[i].connections).length;
+                }
+                    
+                // combine the existing data set with our custom data
+                data3 = data1.concat(data2);
+                num_nodes = Object.keys(data3).length;
+
+                // parse it into a network
+                self.dataObj = data3;
+                self.parseNodeData();
+
+              }).
+              error(function(data, status, headers, config) {
+              });
+                
             }).
             error(function(data, status, headers, config) {
-              // log error
             });
         }
 
