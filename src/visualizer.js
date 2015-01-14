@@ -1586,13 +1586,25 @@
             // pull out glow child 3d object.
             var geometry = node3D.glow.geometry,
                 material = node3D.glow.material,
-                opacity = 0;
+                opacity = 0,
+                color = null;
 
             material.transparent = true;
             // animate the opacity
             TweenMax.to( material, 0.5, {
                 opacity : 0,
                 repeat : 5,
+                yoyo : true,
+                onUpdate : __onFlagMaterialForUpdate,
+                onUpdateParams : [ material ]
+            });
+            // animate the color to green
+            color = material.color;
+            TweenMax.to(color, 0.5, {
+                r : ( 227 * 0.001 ),
+                g : ( 709 * 0.001 ),
+                b : ( 290 * 0.001 ),
+                repeat : 0,
                 yoyo : true,
                 onUpdate : __onFlagMaterialForUpdate,
                 onUpdateParams : [ material ]
