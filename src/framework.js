@@ -97,7 +97,7 @@
             //
             // Eventually it can be made more sophisticated, using keyboard
             // input or other mechanisms to select which scene to play.
-            var scene_to_run = 1;
+            var scene_to_run = 2;
             if(scene_to_run == 1) {
                 $scope.demoAnimationBEAM();
             } else if(scene_to_run == 2) {
@@ -149,7 +149,7 @@
         $scope.showConnection = function(t, node_id, connection_number) {
             var node = $scope.nodeDataManager.nodesHash[node_id];
             var connection = node.connections[connection_number];
-            TweenMax.delayedCall(t,Visualizer.displayConnection,[connection,true]);
+            TweenMax.delayedCall(t,Visualizer.showConnection,[connection,true]);
         }    
         
         /**

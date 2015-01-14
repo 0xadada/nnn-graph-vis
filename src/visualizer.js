@@ -381,6 +381,33 @@
             TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,signalStrength]);
         }
 
+        /**
+         * showConnection reveals a defined connection.
+         *
+         * @param NodeConnection object.
+         * @param Boolean true if drawing the ribbon-style connection UI.
+         * @return void.
+         */
+        function showConnection(connection,ribbons) {
+            var nodeData = _nodeDataManager.getNodeByID(connection.getInitialNode()),
+                node = nodeData.getVisualNode(),
+                connectNodeData = _nodeDataManager.getNodeByID(connection.getConnectionNode()),
+                connectNode = connectNodeData.getVisualNode();
+
+                associationRange = (1-connection.getWeight()+1)*800 + 20,
+                associationVector = __randomSphereVector(associationRange),
+                signalStrength = connection.weight;
+            // if the nodes aren't connected, connec them.
+            debugger;
+            if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID())) {
+                // connect them
+                connection.isConnected(true);
+            }
+            // create and animate in the new connection.
+            TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
+            //TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,signalStrength]);
+        }
+
         function highlightConnection(connection) {
             __vibrateConnectionNerve(connection);
         }
@@ -2092,6 +2119,7 @@
             highlightConnection : highlightConnection,
             addNodeToStage : addNodeToStage,
             removeNodeFromStage : removeNodeFromStage,
+            showConnection : showConnection,
             spinCamera : spinCamera,
             zoomCamera : zoomCamera
         };
