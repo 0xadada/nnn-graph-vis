@@ -1977,6 +1977,9 @@
                 if( nodeData.type === 'entity' ) {
                     iconFileName = '/icon-restaurant.svg';
                 }
+                if( nodeData.type === 'movie' ) {
+                    iconFileName = '/icon-movie.svg';
+                }
                 if( nodeData.type === 'cuisine' ) {
                     iconFileName = '/icon-cuisine.svg';
                 }
