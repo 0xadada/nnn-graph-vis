@@ -50,7 +50,8 @@
             if (event.which === /* Space */ 32) {
                 // begin animation if not started yet.
                 if( $scope.animationBegan === false ) {
-                    $scope.demoMode();
+                    // scene 1
+                    $scope.demoMode(1);
                 }
                 // else toggle playback
                 else {
@@ -80,7 +81,7 @@
             // fade out connect button
             TweenMax.to('.start_button', 0.5, { autoAlpha : 0 })
 
-			// record the scene number
+            // record the scene number
             $scope.scene_number = scene_number;
 
             // load data, which will kickoff $scope.demoAnimation
@@ -105,10 +106,10 @@
             } else if($scope.scene_number == 1) {
                 $scope.scene1();
             } else if($scope.scene_number == 2) {
-				$scope.scene2();
+                $scope.scene2();
             } 
             else if($scope.scene_number == 3) {
-				$scope.scene3();
+                $scope.scene3();
             }
         }
 
@@ -184,8 +185,8 @@
         $scope.animateNode = function(t, node_id, duration, red, green, blue) {
             var node = $scope.nodeDataManager.nodesHash[node_id],
                 node3D = node.getVisualNode();
-            if ( node3D !== undefined) {		
-				TweenMax.delayedCall(t,Visualizer.highlightNode,[node3D, duration, red, green, blue]);
+            if ( node3D !== undefined) {        
+                TweenMax.delayedCall(t,Visualizer.highlightNode,[node3D, duration, red, green, blue]);
             }
         }
 
@@ -256,6 +257,11 @@
          * @return void.
          */
         $scope.scene1 = function() {
+
+            // begin playback
+            $scope.isPaused = false;
+            $scope.animationBegan = true;
+
             // start the timer
             t = 0;
 
@@ -366,6 +372,9 @@
             TweenMax.delayedCall(t,$scope.animateNode,[t,1000002]);
         }
         $scope.scene2 = function() {
+            // begin playback
+            $scope.isPaused = false;
+            $scope.animationBegan = true;
 
             // start the timer
             t = 0;
@@ -382,12 +391,12 @@
             $scope.moveToNode(t, node_id, move_time, use_curved_path);
             t = t + move_time + 1;
 
-			// place the connected nodes
+            // place the connected nodes
             s = 1.2
             $scope.drawNode(t, 2000002, 90, 90, 0);
             $scope.drawNode(t, 2000003, 90, -90, 0);
              
-			// zoom out
+            // zoom out
             t_effect = t;
             t_effect = t_effect + 1;
             TweenMax.delayedCall(t_effect,Visualizer.zoomCamera,[500,1]);
@@ -497,7 +506,10 @@
          * @return void.
          */
         $scope.scene3 = function() {
-            
+            // begin playback
+            $scope.isPaused = false;
+            $scope.animationBegan = true;
+
             // start the timer
             t = 0;
 
@@ -512,7 +524,7 @@
             $scope.moveToNode(t, node_id, move_time, use_curved_path);
             t = t + move_time;
 
-			// draw other nodes
+            // draw other nodes
             $scope.drawNode(t, 3000001, -200, 0, 0);
             $scope.drawNode(t, 3000002, -130, 75, 0);
             $scope.drawNode(t, 3000003, -150, -75, 0);
@@ -583,9 +595,9 @@
             $scope.showConnection(t, 3000029, 0);
             $scope.showConnection(t, 3000029, 1);
 
-			// zoom out
+            // zoom out
             TweenMax.delayedCall(t,Visualizer.zoomCamera,[10000,0.2]);
-			t = t + 0.2;
+            t = t + 0.2;
             
 
         }

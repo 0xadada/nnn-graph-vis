@@ -2,7 +2,7 @@
 {
     "id":"1000001",
     "node_name":"Movie",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{"id":"1000002","weight":"1"},{"id":"1000003","weight":"1"},{"id":"1000004","weight":"1"},{"id":"1000005","weight":"1"},{"id":"1000006","weight":"1"},{"id":"1000007","weight":"1"},{"id":"1000008","weight":"1"},{"id":"1000009","weight":"1"},{"id":"1000011","weight":"1"},{"id":"1000014","weight":"1"},{"id":"1000018","weight":"1"}]
 },
 {
@@ -56,7 +56,7 @@
 {
     "id":"1000010",
     "node_name":"Movie 2",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {
@@ -68,13 +68,13 @@
 {
     "id":"1000012",
     "node_name":"Movie 3",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {
     "id":"1000013",
     "node_name":"Movie 4",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {
@@ -86,19 +86,19 @@
 {
     "id":"1000015",
     "node_name":"Movie 5",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {
     "id":"1000016",
     "node_name":"Movie 6",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {
     "id":"1000017",
     "node_name":"Movie 7",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {
@@ -110,13 +110,13 @@
 {
     "id":"1000019",
     "node_name":"Movie 8",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {
     "id":"1000020",
     "node_name":"Movie 9",
-    "node_type":"entity",
+    "node_type":"movie",
     "connections":[{}]
 },
 {

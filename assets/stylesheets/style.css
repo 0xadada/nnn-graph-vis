@@ -67,6 +67,16 @@ img.node {
     padding:2px;
 }
 
+.button-start {
+    display: inline-block !important;
+    color: white;
+    padding: 1em 6em;
+    text-align: center;
+    border: 1px solid white;
+    border-radius: 0.25em;
+    margin: 1em;
+    }
+
 .start_button {
     display:block;
     position:relative; 
