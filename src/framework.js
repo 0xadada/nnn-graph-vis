@@ -497,38 +497,97 @@
          * @return void.
          */
         $scope.scene3 = function() {
+            
             // start the timer
             t = 0;
 
             // Reveal network
             TweenMax.delayedCall(t,Visualizer.setFogLevel,[0.001,1]);
-            
-            // move to movie node
-            node_id = 1000001;
+
+            // draw the first node, picking one that happens to be in the middle of the network
+            node_id = 3000024;
             move_time = 0.2;
             use_curved_path = true;
-            $scope.drawNode(t, node_id, -100, 0, 0);
+            $scope.drawNode(t, node_id, 0, 0, 0);
             $scope.moveToNode(t, node_id, move_time, use_curved_path);
             t = t + move_time;
 
 			// draw other nodes
-            $scope.drawNode(t, 1000002, 0, 100, 0);
-            
-            
+            $scope.drawNode(t, 3000001, -200, 0, 0);
+            $scope.drawNode(t, 3000002, -130, 75, 0);
+            $scope.drawNode(t, 3000003, -150, -75, 0);
+            $scope.drawNode(t, 3000004, -150, -200, 0);            
+            $scope.drawNode(t, 3000005, -250, -55, 0);            
+            $scope.drawNode(t, 3000006, -270, -0, 0);            
+            $scope.drawNode(t, 3000007, -250, 55, 0);            
+            $scope.drawNode(t, 3000008, -205, 200, 0);            
+            $scope.drawNode(t, 3000009, -300, -110, 0);            
+            $scope.drawNode(t, 3000010, -200, -170, 0);            
+            $scope.drawNode(t, 3000011, -100, -150, 0);            
+            $scope.drawNode(t, 3000012, -60, -75, 0);            
+            $scope.drawNode(t, 3000013, -10, -140, 0);            
+            $scope.drawNode(t, 3000014, -70, -200, 0);            
+            $scope.drawNode(t, 3000015, -130, 160, 0);            
+            $scope.drawNode(t, 3000016, -65, 65, 0);            
+            $scope.drawNode(t, 3000017, 20, 150, 0);            
+            $scope.drawNode(t, 3000018, -10, 50, 0);            
+            $scope.drawNode(t, 3000019, 50, 48, 0);            
+            $scope.drawNode(t, 3000020, 110, 170, 0);            
+            $scope.drawNode(t, 3000021, 130, 20, 0);            
+            $scope.drawNode(t, 3000022, 50, 0, 0);            
+            $scope.drawNode(t, 3000023, -75, -10, 0);            
+            // $scope.drawNode(t, 3000024, 0, 0, 0);  // already presented for centering            
+            $scope.drawNode(t, 3000025, -10, -75, 0);            
+            $scope.drawNode(t, 3000026, -20, -190, 0);            
+            $scope.drawNode(t, 3000027, 30, -180, 0);            
+            $scope.drawNode(t, 3000028, -10, -250, 0);            
+            $scope.drawNode(t, 3000029, 130, -30, 0);            
+            $scope.drawNode(t, 3000030, 180, 40, 0);            
+            $scope.drawNode(t, 3000031, 170, -100, 0);            
+
             // show connections
-            $scope.showConnection(t, 1000001, 0);
+            $scope.showConnection(t, 3000001, 0);
+            $scope.showConnection(t, 3000001, 1);
+            $scope.showConnection(t, 3000001, 2);
+            $scope.showConnection(t, 3000001, 3);
+            $scope.showConnection(t, 3000001, 4);
+            $scope.showConnection(t, 3000001, 5);
+            $scope.showConnection(t, 3000001, 6);
+            $scope.showConnection(t, 3000002, 0);
+            $scope.showConnection(t, 3000002, 1);
+            $scope.showConnection(t, 3000003, 0);
+            $scope.showConnection(t, 3000003, 1);
+            $scope.showConnection(t, 3000004, 0);
+            $scope.showConnection(t, 3000005, 0);
+            $scope.showConnection(t, 3000007, 0);
+            $scope.showConnection(t, 3000009, 0);
+            $scope.showConnection(t, 3000011, 0);
+            $scope.showConnection(t, 3000011, 1);
+            $scope.showConnection(t, 3000011, 2);
+            $scope.showConnection(t, 3000013, 0);
+            $scope.showConnection(t, 3000016, 0);
+            $scope.showConnection(t, 3000016, 1);
+            $scope.showConnection(t, 3000017, 0);
+            $scope.showConnection(t, 3000018, 0);
+            $scope.showConnection(t, 3000019, 0);
+            $scope.showConnection(t, 3000019, 1);
+            $scope.showConnection(t, 3000019, 2);
+            $scope.showConnection(t, 3000023, 0);
+            $scope.showConnection(t, 3000023, 1);
+            $scope.showConnection(t, 3000024, 0);
+            $scope.showConnection(t, 3000025, 0);
+            $scope.showConnection(t, 3000026, 0);
+            $scope.showConnection(t, 3000027, 0);
+            $scope.showConnection(t, 3000027, 1);
+            $scope.showConnection(t, 3000028, 1);
+            $scope.showConnection(t, 3000029, 0);
+            $scope.showConnection(t, 3000029, 1);
 
 			// zoom out
-            TweenMax.delayedCall(t,Visualizer.zoomCamera,[500,0.2]);
+            TweenMax.delayedCall(t,Visualizer.zoomCamera,[10000,0.2]);
 			t = t + 0.2;
-
-            // highlight a node
-            t = t + 2;
-            TweenMax.delayedCall(t,$scope.animateNode,[t,1000002,1,0,0,0.777]);
             
-            // highlight a connection
-            t = t + 2;
-            TweenMax.delayedCall(t,$scope.animateConnection,[t,1000001,0]);
+
         }
 
         /**

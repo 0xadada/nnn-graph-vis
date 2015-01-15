@@ -397,14 +397,15 @@
                 associationRange = (1-connection.getWeight()+1)*800 + 20,
                 associationVector = __randomSphereVector(associationRange),
                 signalStrength = connection.weight;
+                console.log(signalStrength);
             // if the nodes aren't connected, connec them.
             if (!connection.isConnected() && !connectNodeData.checkConnection(nodeData.getID())) {
                 // connect them
                 connection.isConnected(true);
             }
             // create and animate in the new connection.
-            TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
-            //TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,signalStrength]);
+            //TweenMax.delayedCall(1,__linkNodes,[connection,ribbons,node,connectNode,12]);
+            TweenMax.delayedCall(0.2,__linkNodes,[connection,ribbons,node,connectNode,signalStrength]);
         }
 
         function highlightConnection(connection) {
