@@ -178,11 +178,11 @@
          * @param int nodeId the id of the node that is to be animated.
          * @return void.
          */
-        $scope.animateNode = function(t, node_id, red, green, blue) {
+        $scope.animateNode = function(t, node_id, duration, red, green, blue) {
             var node = $scope.nodeDataManager.nodesHash[node_id],
                 node3D = node.getVisualNode();
-            if ( node3D !== undefined) {
-                Visualizer.highlightNode( node3D, red, green, blue );
+            if ( node3D !== undefined) {		
+				TweenMax.delayedCall(t,Visualizer.highlightNode,[node3D, duration, red, green, blue]);
             }
         }
 
@@ -380,12 +380,13 @@
             node_id = 1000001;
             move_time = 0.2;
             use_curved_path = true;
-            $scope.drawNode(t, node_id, 0, 0, 0);
+            $scope.drawNode(t, node_id, -100, 0, 0);
             $scope.moveToNode(t, node_id, move_time, use_curved_path);
             t = t + move_time;
 
-			// draw node 2
+			// draw other nodes
             $scope.drawNode(t, 1000002, 0, 100, 0);
+            
             
             // show connections
             $scope.showConnection(t, 1000001, 0);
@@ -394,13 +395,13 @@
             TweenMax.delayedCall(t,Visualizer.zoomCamera,[500,0.2]);
 			t = t + 0.2;
 
+            // highlight a node
+            t = t + 2;
+            TweenMax.delayedCall(t,$scope.animateNode,[t,1000002,1,0,0,0.777]);
+            
             // highlight a connection
             t = t + 2;
-			red = ( 0 * 0.001 );
-			green = ( 0 * 0.001 );
-			blue = ( 777 * 0.001 );
-			duration = 1.0;
-            TweenMax.delayedCall(t,$scope.animateNode,[t,1000002, duration, red, green, blue]);
+            TweenMax.delayedCall(t,$scope.animateConnection,[t,1000001,0]);
         }
 
         /**
