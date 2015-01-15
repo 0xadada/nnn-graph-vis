@@ -1986,6 +1986,27 @@
                 if( nodeData.type === 'inhibition' ) {
                     iconFileName = '/icon-inhibition.svg';
                 }
+                if( nodeData.type === 'price' ) {
+                    iconFileName = '/icon-price.svg';
+                }
+                if( nodeData.type === 'style' ) {
+                    iconFileName = '/icon-style.svg';
+                }
+                if( nodeData.type === 'openlate' ) {
+                    iconFileName = '/icon-openlate.svg';
+                }
+                if( nodeData.type === 'gfg' ) {
+                    iconFileName = '/icon-gfg.svg';
+                }
+                if( nodeData.type === 'geo' ) {
+                    iconFileName = '/icon-geo.svg';
+                }
+                if( nodeData.type === 'loud' ) {
+                    iconFileName = '/icon-loud.svg';
+                }
+                if( nodeData.type === 'outdoor' ) {
+                    iconFileName = '/icon-outdoor.svg';
+                }
 
                 var iconTexture = THREE.ImageUtils.loadTexture('assets/images/theme-' +
                     window.nara.theme +

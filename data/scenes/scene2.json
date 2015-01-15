@@ -20,31 +20,31 @@
 {
     "id":"2000004",
     "node_name":"$$$",
-    "node_type":"entity",
+    "node_type":"price",
     "connections":[{}]
 },
 {
     "id":"2000005",
     "node_name":"Italian",
-    "node_type":"entity",
+    "node_type":"cuisine",
     "connections":[{}]
 },
 {
     "id":"2000006",
     "node_name":"Classic",
-    "node_type":"entity",
+    "node_type":"style",
     "connections":[{}]
 },
 {
     "id":"2000007",
     "node_name":"Open late",
-    "node_type":"entity",
+    "node_type":"openlate",
     "connections":[{}]
 },
 {
     "id":"2000008",
     "node_name":"Outdoor Seating",
-    "node_type":"entity",
+    "node_type":"outdoor",
     "connections":[{}]
 },
 {
@@ -62,37 +62,37 @@
 {
     "id":"2000011",
     "node_name":"Mexican",
-    "node_type":"entity",
+    "node_type":"cuisine",
     "connections":[{}]
 },
 {
     "id":"2000012",
     "node_name":"Trendy",
-    "node_type":"entity",
+    "node_type":"style",
     "connections":[{}]
 },
 {
     "id":"2000013",
     "node_name":"$$$",
-    "node_type":"entity",
+    "node_type":"price",
     "connections":[{}]
 },
 {
     "id":"2000014",
     "node_name":"Happy Hour",
-    "node_type":"entity",
+    "node_type":"openlate",
     "connections":[{}]
 },
 {
     "id":"2000015",
     "node_name":"Good for Groups",
-    "node_type":"entity",
+    "node_type":"groups",
     "connections":[{}]
 },
 {
     "id":"2000016",
-    "node_name":"",
-    "node_type":"entity",
+    "node_name":"Noisy",
+    "node_type":"loud",
     "connections":[{"id":"2000002","weight":"1"},{"id":"2000017","weight":"1"},{"id":"2000018","weight":"1"},{"id":"2000019","weight":"1"},{"id":"2000020","weight":"1"}]
 },
 {
@@ -104,7 +104,7 @@
 {
     "id":"2000018",
     "node_name":"",
-    "node_type":"entity",
+    "node_type":"geo",
     "connections":[{}]
 },
 {
