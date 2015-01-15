@@ -1,6 +1,4 @@
 (function() {
-    
-
 
     app.factory('NodeDataManager', function ($http,$rootScope,NodeData,NodeConnection) {
 
@@ -16,7 +14,7 @@
             this.scope = scope;
         }
 
-        NodeDataManager.prototype.loadData = function(id)
+        NodeDataManager.prototype.loadData = function(scene_number)
         {
 
             var self = this;
@@ -28,11 +26,11 @@
               // store the default data set for eventual concatenation
               var data1 = data;
               
-              // slice the BEAM data to be slightly more efficient during testing
-              // data1 = data1.slice(0,3);
-
               // load in our new custom nodes
-              $http.get('data/scenes/scene3.json').
+              var scene_file = '';
+              scene_file = scene_file.concat('data/scenes/scene', scene_number.toString(), '.json'); 
+              console.log(scene_file);
+			  $http.get(scene_file).
               success(function(data, status, headers, config) {
 
                 // prepare the custom data for concatenation

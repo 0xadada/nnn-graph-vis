@@ -106,7 +106,10 @@
     <div class='scene' id='visualizer'></div>
 
     <div class='hud'>
-        <div class="start_button" ng-click="demoMode()"><img class="start_button" src="assets/images/connect.jpg" /></div>
+        <div class="start_button" ng-click="demoMode(1)"><img class="start_button" src="assets/images/connect.jpg" /></div>
+        <div class="start_button" ng-click="demoMode(2)"><img class="start_button" src="assets/images/connect.jpg" /></div>
+        <div class="start_button" ng-click="demoMode(3)"><img class="start_button" src="assets/images/connect.jpg" /></div>
+
         <div style="display: none;">
             <button ng-click="getGraphData()">load data</button>
             <button ng-click="connectAllNodes()">connect</button> 

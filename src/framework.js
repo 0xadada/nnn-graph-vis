@@ -76,11 +76,15 @@
          *
          * @return void.
          */
-        $scope.demoMode = function() {
+        $scope.demoMode = function(scene_number) {
             // fade out connect button
             TweenMax.to('.start_button', 0.5, { autoAlpha : 0 })
+
+			// record the scene number
+            $scope.scene_number = scene_number;
+
             // load data, which will kickoff $scope.demoAnimation
-            $scope.getGraphData();
+            $scope.getGraphData(scene_number);
         }
 
         /**
@@ -96,15 +100,14 @@
             //
             // Eventually it can be made more sophisticated, using keyboard
             // input or other mechanisms to select which scene to play.
-            var scene_to_run = 3;
-            if(scene_to_run == 0) {
+            if($scope.scene_number == 0) {
                 $scope.demoAnimationBEAM();
-            } else if(scene_to_run == 1) {
+            } else if($scope.scene_number == 1) {
                 $scope.scene1();
-            } else if(scene_to_run == 2) {
+            } else if($scope.scene_number == 2) {
 				$scope.scene2();
             } 
-            else if(scene_to_run == 3) {
+            else if($scope.scene_number == 3) {
 				$scope.scene3();
             }
         }
@@ -362,6 +365,130 @@
             t = t + 2;
             TweenMax.delayedCall(t,$scope.animateNode,[t,1000002]);
         }
+        $scope.scene2 = function() {
+
+            // start the timer
+            t = 0;
+
+            // Reveal network
+            TweenMax.delayedCall(t,Visualizer.setFogLevel,[0.001,1]);
+
+            // move to movie node
+            t = t + 0.2;
+            node_id = 2000001;
+            move_time = 0.2;
+            use_curved_path = true;
+            $scope.drawNode(t, node_id, 0, 0, 0);
+            $scope.moveToNode(t, node_id, move_time, use_curved_path);
+            t = t + move_time + 1;
+
+			// place the connected nodes
+            s = 1.2
+            $scope.drawNode(t, 2000002, 90, 90, 0);
+            $scope.drawNode(t, 2000003, 90, -90, 0);
+             
+			// zoom out
+            t_effect = t;
+            t_effect = t_effect + 1;
+            TweenMax.delayedCall(t_effect,Visualizer.zoomCamera,[500,1]);
+             
+            // show connections for Jane
+            $scope.showConnection(t, 2000001, 0);
+            $scope.showConnection(t, 2000001, 1);
+             
+            // connected attributes for restaurant 1
+            t = t + 4;
+            $scope.drawNode(t, 2000004, 20*s, 90*s, 0);
+            $scope.drawNode(t, 2000005, 40*s, 140*s, 0);
+            $scope.drawNode(t, 2000006, 90*s, 150*s, 0);
+            $scope.drawNode(t, 2000007, 130*s, 130*s, 0);
+            $scope.drawNode(t, 2000008, 145*s, 90*s, 0);
+            $scope.drawNode(t, 2000009, 125*s, 55*s, 0);
+            $scope.drawNode(t, 2000010, 90*s, 30*s, 0);
+            
+            // show connections for restaurant 1
+            $scope.showConnection(t, 2000002, 0);
+            $scope.showConnection(t, 2000002, 1);
+            $scope.showConnection(t, 2000002, 2);
+            $scope.showConnection(t, 2000002, 3);
+            $scope.showConnection(t, 2000002, 4);
+            $scope.showConnection(t, 2000002, 5);
+            $scope.showConnection(t, 2000002, 6);          
+            
+            // connected attributes for restaurant 2
+            t = t + 2;
+            $scope.drawNode(t, 2000011, 130*s, -45*s, 0);
+            $scope.drawNode(t, 2000012, 150*s, -90*s, 0);
+            $scope.drawNode(t, 2000013, 135*s, -130*s, 0);
+            $scope.drawNode(t, 2000014, 75*s, -140*s, 0);
+            $scope.drawNode(t, 2000015, 30*s, -90*s, 0);
+            
+            // show connections for restaurant 2
+            $scope.showConnection(t, 2000003, 0);
+            $scope.showConnection(t, 2000003, 1);
+            $scope.showConnection(t, 2000003, 2);
+            $scope.showConnection(t, 2000003, 3);
+            $scope.showConnection(t, 2000003, 4);
+                         
+            // connected node from restaurant 1
+            t = t + 4;
+            $scope.drawNode(t, 2000016, 180*s, 180*s, 0);
+            
+            // show connections to restaurant 1
+            $scope.showConnection(t, 2000016, 0);
+                     
+            // connected node to new node
+            t = t + 2;
+            $scope.drawNode(t, 2000017, 135*s, 180*s, 0);
+            $scope.drawNode(t, 2000018, 180*s, 225*s, 0);
+            $scope.drawNode(t, 2000019, 215*s, 205*s, 0);
+            $scope.drawNode(t, 2000020, 180*s, 135*s, 0);
+            
+
+            // show connections to new node
+            $scope.showConnection(t, 2000016, 1);
+            $scope.showConnection(t, 2000016, 2);
+            $scope.showConnection(t, 2000016, 3);
+            $scope.showConnection(t, 2000016, 4);
+            
+       
+            // connected node from restaurant 2
+            $scope.drawNode(t, 2000026, 180*s, -40*s, 0);
+            
+            // show connections to restaurant 1
+            $scope.showConnection(t, 2000026, 0);
+                     
+            // connected node to new node
+            t = t + 2;
+            $scope.drawNode(t, 2000027, 160*s, -10*s, 0);
+            $scope.drawNode(t, 2000028, 190*s, 10*s, 0);
+            $scope.drawNode(t, 2000029, 215*s, -25*s, 0);
+            $scope.drawNode(t, 2000030, 195*s, -95*s, 0);
+
+            // show connections to new node
+            $scope.showConnection(t, 2000026, 1);
+            $scope.showConnection(t, 2000026, 2);
+            $scope.showConnection(t, 2000026, 3);
+            $scope.showConnection(t, 2000026, 4);  
+             
+            // connected node from new node
+            $scope.drawNode(t, 2000021, 270*s, 180*s, 0);
+            
+            // show connections to new node
+            $scope.showConnection(t, 2000021, 0);
+                     
+            // connected node to new node
+            t = t + 2;
+            $scope.drawNode(t, 2000022, 235*s, 155*s, 0);
+            $scope.drawNode(t, 2000023, 315*s, 180*s, 0);
+            $scope.drawNode(t, 2000024, 305*s, 155*s, 0);
+       
+            // show connections to node
+            $scope.showConnection(t, 2000021, 1);
+            $scope.showConnection(t, 2000021, 2);
+            $scope.showConnection(t, 2000021, 3);     
+            
+        }
 
         /**
          * this is another animation that we can call from demoAnimation()
@@ -588,8 +715,8 @@
             Visualizer.connectNode(node,true);
         }
 
-        $scope.getGraphData = function() {
-            $scope.nodeDataManager.loadData();
+        $scope.getGraphData = function(graph_number) {
+            $scope.nodeDataManager.loadData(graph_number);
             $scope.nodes = $scope.nodeDataManager.getNodeList();
         }
 
