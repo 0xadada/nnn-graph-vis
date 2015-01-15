@@ -1364,14 +1364,16 @@
          * @param Number coreSize the size of the core.
          * @param THREE.Vector3 v1 xyz coordinates of starting point.
          * @param THREE.Vector3 v2 xyz coordinates of destination point.
-         * @motion Boolean true if animation is need.
+         * @motion Boolean true if animation is needed.
          * @param Number signalStrength value of the weighted connection.
          * @return THREE.Object3D mesh of the connection nerve.
          */
         function __generateConnectionNerve(coreSize, v1, v2, motion, signalStrength) {
-            var dist = v1.distanceTo(v2),
-                weight = 0,
-                geomWidth = signalStrength * 1000;
+
+            // Set up some variables.
+            var dist = v1.distanceTo(v2), // How far from one point to another?
+                weight = 0, // Let's assume the connection has no weight for now.
+                geomWidth = signalStrength * 1000; // The width of the nerve is determined by the signalStrength.
             var connectGeom = new THREE.PlaneGeometry(
                 /* width 0.1*(Math.abs(weight)+1) */ geomWidth,
                 /* height */ dist/10,
@@ -1379,23 +1381,40 @@
                 /* height segments */ Math.ceil(dist/5)
             );
 
+            // Use the ribbon material.
             var connectMat = _ribbonMat.clone();
-            // adjust connection material opacity per signalStrength
+
+            // The weaker the weight, the more see-through the ribbon.
             connectMat.opacity = signalStrength;
 
+            // We're going to iterate through each vertex in the geometry.
             var i = 0;
             var limit = connectGeom.vertices.length;
 
+            // We'll start from the center.
             var vectorOffset = new THREE.Vector3(0,0,0);
+
+            // Start counting one less than 0.
             var counter = -1;
 
+            // Not sure what we're doing here to get the "spread."
+            // This is equivalent to saying: "limit / Math.pow(2,1)",
+            // or even more straightforwardly: limit / 2. 
+            // So, we're halving the limit.
             var spread = limit>>1;
+
+            // Get the distance between the points.
             var xDist = (v2.x - v1.x);
             var yDist = (v2.y - v1.y);
             var zDist = (v2.z - v1.z);
+
+            // Choose a random number (float) between -5 and 5.
             var rnd = Math.random()*10-5;
+
+            // Triple the size of the core shape.
             var xRnd = coreSize * 3;
 
+            // Update the geometry when a flag is set.
             var tl = new TimelineMax({
                 delay : 1,
                 onUpdate : __onFlagGeometryForUpdate,
@@ -1403,20 +1422,34 @@
             });
             tl.addLabel('fire');
 
-            for (i = 0; i < limit; ++i) {
+            // Go through each vertex.
+            for (i = 1; i < limit; ++i) {
                 //todo increment by 2 to keep nodes next to each other 
                 if (i % 2 == 0)
                     counter++;
+
+                // Get the vertex and set it's x, y, and z values to 0.
                 var vect = connectGeom.vertices[i];
                 vect.x = 0;
                 vect.y = 0;
                 vect.z = 0;
 
-                vectorOffset = (
-                    new THREE.Vector3((Math.sin(counter/spread*Math.PI*2)),
-                    (Math.cos(counter/spread*Math.PI*2)),
-                    (Math.sin(counter/spread*Math.PI*2)))
-                );
+                // Make an x, y, z point.
+                // The "someValue" number is going to start out as a small decimal (0.1 or something) and get a little bit bigger each time.
+                // Then, multiplying it by "piDoubled" is going to make it get even bigger.
+                var someValue = counter/spread;
+                var piDoubled = Math.PI * 2;
+                var anotherValue = someValue * piDoubled;
+
+                // Sine-ing "anotherValue" is going to fluctuate between 1 and -1.
+                var sinValue = Math.sin(anotherValue);
+
+                // Cosine-ing "anotherValue" is going to fluctuate between -1 and 1.
+                var cosValue = Math.cos(anotherValue);
+
+                // Now, build a 3d point from the sine and cosine value.
+                vectorOffset = new THREE.Vector3(sinValue, cosValue, sinValue);
+
 
                 var tarX = v1.x +
                     ((xDist/spread)*counter) +
@@ -1440,14 +1473,18 @@
                     (vectorOffset.z) *
                     ((spread>>1)-(Math.abs((spread>>1)-counter)))/5;
 
+                // The last two vertices:
+                // x, y, and z of the v2 point. 
                 if (i >= limit-2) {
                     tarX = v2.x;
                     tarY = v2.y;
                     tarZ = v2.z;
                 }
 
+                // Choose a speed.
                 var speed = /* i/100 */ 2.250 /* seconds */;
 
+                // Animate to the targeted x, y, and z coordinates.
                 tl.to(vect, speed, {
                     ease : Quad.easeInOut,
                     x : tarX,
@@ -1456,9 +1493,11 @@
                 }, 'fire');
             }
 
+            // Build the mesh itself and add it to the list of connections.
             var connection = new THREE.Mesh(connectGeom,connectMat);
             _connectionsArray.push(connection);
 
+            // Send back the mesh.
             return connection;
         }
 
