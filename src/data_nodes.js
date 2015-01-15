@@ -32,7 +32,7 @@
               // data1 = data1.slice(0,3);
 
               // load in our new custom nodes
-              $http.get('data/scenes/scene1.json').
+              $http.get('data/scenes/scene3.json').
               success(function(data, status, headers, config) {
 
                 // prepare the custom data for concatenation

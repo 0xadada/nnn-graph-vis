@@ -411,8 +411,8 @@
             __vibrateConnectionNerve(connection);
         }
 
-        function highlightNode( nodeData ) {
-            __highlightNode( nodeData );
+        function highlightNode( nodeData, duration, red, green, blue ) {
+            __highlightNode( nodeData, duration, red, green, blue );
         }
 
         function clusterNodes(nodes) {
@@ -1580,7 +1580,7 @@
          * @param THREE.Object3D node3D node in the scene.
          * @return void.
          */
-        function __highlightNode( /* THREE.Object3D */ node3D ) {
+        function __highlightNode( /* THREE.Object3D */ node3D, duration, red, green, blue ) {
             // bail if there is no no-glow object.
             if( node3D.glow === undefined ) return;
             // pull out glow child 3d object.
@@ -1590,20 +1590,25 @@
                 color = null;
 
             material.transparent = true;
-            // animate the opacity
-            TweenMax.to( material, 0.5, {
-                opacity : 0,
-                repeat : 5,
-                yoyo : true,
-                onUpdate : __onFlagMaterialForUpdate,
-                onUpdateParams : [ material ]
-            });
+
+            // animate the opacity            
+            var animate_opacity = false;
+            if(animate_opacity) {
+				TweenMax.to( material, 0.5, {
+					opacity : 0,
+					repeat : 5,
+					yoyo : true,
+					onUpdate : __onFlagMaterialForUpdate,
+					onUpdateParams : [ material ]
+				});
+			}
+			
             // animate the color to green
             color = material.color;
-            TweenMax.to(color, 0.5, {
-                r : ( 227 * 0.001 ),
-                g : ( 709 * 0.001 ),
-                b : ( 290 * 0.001 ),
+            TweenMax.to(color, duration, {
+                r : red,
+                g : green,
+                b : blue,
                 repeat : 0,
                 yoyo : true,
                 onUpdate : __onFlagMaterialForUpdate,

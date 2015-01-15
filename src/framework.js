@@ -96,11 +96,16 @@
             //
             // Eventually it can be made more sophisticated, using keyboard
             // input or other mechanisms to select which scene to play.
-            var scene_to_run = 2;
-            if(scene_to_run == 1) {
+            var scene_to_run = 3;
+            if(scene_to_run == 0) {
                 $scope.demoAnimationBEAM();
-            } else if(scene_to_run == 2) {
+            } else if(scene_to_run == 1) {
                 $scope.scene1();
+            } else if(scene_to_run == 2) {
+				$scope.scene2();
+            } 
+            else if(scene_to_run == 3) {
+				$scope.scene3();
             }
         }
 
@@ -173,11 +178,11 @@
          * @param int nodeId the id of the node that is to be animated.
          * @return void.
          */
-        $scope.animateNode = function(t, node_id) {
+        $scope.animateNode = function(t, node_id, red, green, blue) {
             var node = $scope.nodeDataManager.nodesHash[node_id],
                 node3D = node.getVisualNode();
             if ( node3D !== undefined) {
-                Visualizer.highlightNode( node3D );
+                Visualizer.highlightNode( node3D, red, green, blue );
             }
         }
 
@@ -356,6 +361,46 @@
             TweenMax.delayedCall(t,$scope.animateConnection,[t,1000001,0]);
             t = t + 2;
             TweenMax.delayedCall(t,$scope.animateNode,[t,1000002]);
+        }
+
+        /**
+         * this is another animation that we can call from demoAnimation()
+         * it was designed by Nara, to depict the first network in the storyboard.
+         *
+         * @return void.
+         */
+        $scope.scene3 = function() {
+            // start the timer
+            t = 0;
+
+            // Reveal network
+            TweenMax.delayedCall(t,Visualizer.setFogLevel,[0.001,1]);
+            
+            // move to movie node
+            node_id = 1000001;
+            move_time = 0.2;
+            use_curved_path = true;
+            $scope.drawNode(t, node_id, 0, 0, 0);
+            $scope.moveToNode(t, node_id, move_time, use_curved_path);
+            t = t + move_time;
+
+			// draw node 2
+            $scope.drawNode(t, 1000002, 0, 100, 0);
+            
+            // show connections
+            $scope.showConnection(t, 1000001, 0);
+
+			// zoom out
+            TweenMax.delayedCall(t,Visualizer.zoomCamera,[500,0.2]);
+			t = t + 0.2;
+
+            // highlight a connection
+            t = t + 2;
+			red = ( 0 * 0.001 );
+			green = ( 0 * 0.001 );
+			blue = ( 777 * 0.001 );
+			duration = 1.0;
+            TweenMax.delayedCall(t,$scope.animateNode,[t,1000002, duration, red, green, blue]);
         }
 
         /**
