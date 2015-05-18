@@ -1,10 +1,11 @@
 To run the protoype:
 
-Requirements: 
-# Have Python or a webserver
+## Requirements: 
+1. Have Python or a webserver
 
-Instructions:
-# Put files into folder
-# cd into that folder
-## python -m SimpleHTTPServer 8899
-# Or put it on a server, and serve it up
+## Instructions:
+
+1. Put files into folder
+2. cd into that folder
+   1. python -m SimpleHTTPServer 8899
+3. Or put it on a server, and serve it up
