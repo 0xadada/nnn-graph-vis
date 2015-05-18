@@ -1,0 +1,182 @@
+[
+{
+    "id":"2000001",
+    "node_name":"Jane",
+    "node_type":"user",
+    "connections":[{"id":"2000002","weight":"1"},{"id":"2000003","weight":"1"}]
+},
+{
+    "id":"2000002",
+    "node_name":"Restaurant",
+    "node_type":"entity",
+ "connections":[{"id":"2000004","weight":"1"},{"id":"2000005","weight":"1"},{"id":"2000006","weight":"1"},{"id":"2000007","weight":"1"},{"id":"2000008","weight":"1"},{"id":"2000009","weight":"1"},{"id":"2000010","weight":"1"}]
+},
+{
+    "id":"2000003",
+    "node_name":"Restaurant",
+    "node_type":"entity",
+    "connections":[{"id":"2000011","weight":"1"},{"id":"2000012","weight":"1"},{"id":"2000013","weight":"1"},{"id":"2000014","weight":"1"},{"id":"2000015","weight":"1"}]
+},
+{
+    "id":"2000004",
+    "node_name":"$$$",
+    "node_type":"price",
+    "connections":[{}]
+},
+{
+    "id":"2000005",
+    "node_name":"Italian",
+    "node_type":"cuisine",
+    "connections":[{}]
+},
+{
+    "id":"2000006",
+    "node_name":"Classic",
+    "node_type":"style",
+    "connections":[{}]
+},
+{
+    "id":"2000007",
+    "node_name":"Open late",
+    "node_type":"openlate",
+    "connections":[{}]
+},
+{
+    "id":"2000008",
+    "node_name":"Outdoor Seating",
+    "node_type":"outdoor",
+    "connections":[{}]
+},
+{
+    "id":"2000009",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000010",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000011",
+    "node_name":"Mexican",
+    "node_type":"cuisine",
+    "connections":[{}]
+},
+{
+    "id":"2000012",
+    "node_name":"Trendy",
+    "node_type":"style",
+    "connections":[{}]
+},
+{
+    "id":"2000013",
+    "node_name":"$$$",
+    "node_type":"price",
+    "connections":[{}]
+},
+{
+    "id":"2000014",
+    "node_name":"Happy Hour",
+    "node_type":"openlate",
+    "connections":[{}]
+},
+{
+    "id":"2000015",
+    "node_name":"Good for Groups",
+    "node_type":"groups",
+    "connections":[{}]
+},
+{
+    "id":"2000016",
+    "node_name":"Noisy",
+    "node_type":"loud",
+    "connections":[{"id":"2000002","weight":"1"},{"id":"2000017","weight":"1"},{"id":"2000018","weight":"1"},{"id":"2000019","weight":"1"},{"id":"2000020","weight":"1"}]
+},
+{
+    "id":"2000017",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000018",
+    "node_name":"",
+    "node_type":"geo",
+    "connections":[{}]
+},
+{
+    "id":"2000019",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000020",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000021",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{"id":"2000016","weight":"1"},{"id":"2000022","weight":"1"},{"id":"2000023","weight":"1"},{"id":"2000024","weight":"1"}]
+},
+{
+    "id":"2000022",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000023",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000024",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000025",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{"id":"2000021","weight":"1"},{"id":"2000026","weight":"1"},{"id":"2000027","weight":"1"},{"id":"2000028","weight":"1"}]
+},
+{
+    "id":"2000026",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{"id":"2000003","weight":"1"},{"id":"2000027","weight":"1"},{"id":"2000028","weight":"1"},{"id":"2000029","weight":"1"},{"id":"2000030","weight":"1"}]
+},
+{
+    "id":"2000027",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000028",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000029",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+},
+{
+    "id":"2000030",
+    "node_name":"",
+    "node_type":"entity",
+    "connections":[{}]
+}
+]

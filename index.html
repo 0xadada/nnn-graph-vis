@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Nara Neural Network</title>
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/style.css" />
+    <style type="text/css">
+    
+</style>
 </head>
 <body>
 <!-- config options -->
@@ -102,11 +105,17 @@
 <script src="src/framework.js"></script>
 <script src="vendor/helvetiker_regular.typeface.js"></script>
 
+
 <div class="core" ng-app="Core" ng-controller="CoreCtrl">
     <div class='scene' id='visualizer'></div>
 
     <div class='hud'>
-        <div class="start_button" ng-click="demoMode()"><img class="start_button" src="assets/images/connect.jpg" /></div>
+        <div style="text-align: center">
+            <div class="start_button button-start" ng-click="demoMode(1)">Scene 1</div>
+            <div class="start_button button-start" ng-click="demoMode(2)">Scene 2</div>
+            <div class="start_button button-start" ng-click="demoMode(3)">Scene 3</div>
+        </div>
+
         <div style="display: none;">
             <button ng-click="getGraphData()">load data</button>
             <button ng-click="connectAllNodes()">connect</button> 
